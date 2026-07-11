@@ -27,6 +27,9 @@ Users can:
 - Select a default provider.
 - Switch provider/model from the popup before summarising.
 - Remove or update provider profiles.
+- Create a provider through a modal-style popup.
+- Expand saved provider cards to review or update details.
+- Keep non-default providers collapsed until they are needed.
 
 ## Implementation Direction
 
@@ -45,6 +48,13 @@ Then route internally to provider-specific clients:
 - `openAiCompatibleClient`
 
 This keeps the popup independent from provider-specific request shapes.
+
+## Settings UX
+
+- The default provider appears expanded so users can see what is active.
+- Non-default providers are collapsed to reduce noise.
+- Users can expand any saved provider card at any time.
+- Creating or editing a provider uses the same modal editor.
 
 ## Release Considerations
 

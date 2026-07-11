@@ -60,6 +60,9 @@ Goal: let users use whichever AI provider and API key they already have.
 - Done: store provider records with provider type, display name, API key, selected model, optional base URL, and default flag.
 - Done: add provider-specific API clients behind one shared summarisation interface.
 - Done: add model presets but allow custom model names for advanced users.
+- Done: open new provider creation in a modal-style popup.
+- Done: show existing providers as an expandable list.
+- Done: keep the default provider expanded and non-default providers collapsed by default.
 - Done: add draft privacy wording that text is sent to the selected provider, not always Gemini.
 
 ## Phase 4 - Improve summarisation quality

@@ -88,6 +88,7 @@ This is an early working version. The core extension flow is in place, and the f
 - Added pasted-text and text-file source modes.
 - Added links-only extraction.
 - Added multi-provider settings and provider selection.
+- Added expandable provider cards with modal creation/editing.
 - Added a dismissible on-page summarisation prompt.
 - Reorganized files into `src/` and `assets/`.
 - Added generated icon assets for Chrome extension sizes.
