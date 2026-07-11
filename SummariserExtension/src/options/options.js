@@ -8,26 +8,85 @@ const apiKeyInput = document.getElementById("api-key");
 const baseUrlInput = document.getElementById("base-url");
 const defaultProviderInput = document.getElementById("default-provider");
 const providerHelp = document.getElementById("provider-help");
+const apiGuideSteps = document.getElementById("api-guide-steps");
+const apiGuideLink = document.getElementById("api-guide-link");
 const newButton = document.getElementById("new-btn");
+const closeWindowButton = document.getElementById("close-window-btn");
 const saveButton = document.getElementById("save-btn");
 const deleteButton = document.getElementById("delete-btn");
 const cancelButton = document.getElementById("cancel-btn");
 const closeModalButton = document.getElementById("close-modal-btn");
 const toggleKeyButton = document.getElementById("toggle-key-btn");
+const autoCloseBanner = document.getElementById("auto-close-banner");
+const autoCloseMessage = document.getElementById("auto-close-message");
+const cancelAutoCloseButton = document.getElementById("cancel-auto-close-btn");
 const statusMessage = document.getElementById("status-message");
 
 let profiles = [];
 let editingProfileId = "";
 let expandedProfileIds = new Set();
+let autoCloseTimerId = 0;
+let autoCloseIntervalId = 0;
+let statusHideTimerId = 0;
+
+const API_KEY_GUIDES = {
+	gemini: {
+		url: "https://aistudio.google.com/app/apikey",
+		linkLabel: "Open Google AI Studio",
+		steps: [
+			"Open Google AI Studio and sign in with your Google account.",
+			"Create an API key from the API keys page.",
+			"Copy the key, paste it here, then keep the default Gemini model unless you need another one.",
+		],
+	},
+	openai: {
+		url: "https://platform.openai.com/api-keys",
+		linkLabel: "Open OpenAI API keys",
+		steps: [
+			"Open the OpenAI platform and sign in to the workspace you want to bill from.",
+			"Create a new secret key on the API keys page.",
+			"Copy the key once, paste it here, and use an OpenAI chat model such as gpt-4.1-mini.",
+		],
+	},
+	anthropic: {
+		url: "https://platform.claude.com/settings/keys",
+		linkLabel: "Open Anthropic Console",
+		steps: [
+			"Open Anthropic Console and sign in to the workspace you want to use.",
+			"Create an API key from Settings, then API keys.",
+			"Copy the key, paste it here, and keep a Claude model name in the model field.",
+		],
+	},
+	grok: {
+		url: "https://console.x.ai/",
+		linkLabel: "Open xAI Console",
+		steps: [
+			"Open the xAI Console and sign in.",
+			"Create an API key from the console API key area.",
+			"Copy the key, paste it here, and use a Grok model supported by your account.",
+		],
+	},
+	custom: {
+		url: "",
+		linkLabel: "",
+		steps: [
+			"Open your provider dashboard or self-hosted gateway.",
+			"Create an API key with chat completions access.",
+			"Paste the key here, then enter the provider's OpenAI-compatible base URL and model name.",
+		],
+	},
+};
 
 document.addEventListener("DOMContentLoaded", initialiseOptions);
 providerTypeSelect.addEventListener("change", syncProviderDefaults);
 newButton.addEventListener("click", () => openProviderModal());
+closeWindowButton.addEventListener("click", closeSettingsWindow);
 saveButton.addEventListener("click", saveProfile);
 deleteButton.addEventListener("click", deleteProfile);
 cancelButton.addEventListener("click", closeProviderModal);
 closeModalButton.addEventListener("click", closeProviderModal);
 toggleKeyButton.addEventListener("click", toggleKeyVisibility);
+cancelAutoCloseButton.addEventListener("click", cancelAutoClose);
 providerModal.addEventListener("click", (event) => {
 	if (event.target.hasAttribute("data-close-modal")) {
 		closeProviderModal();
@@ -145,6 +204,7 @@ function toggleProviderCard(profileId) {
 }
 
 function openProviderModal(profileId = "") {
+	cancelAutoClose();
 	const profile = profiles.find((item) => item.id === profileId);
 	editingProfileId = profile ? profile.id : "";
 	modalTitle.textContent = profile ? "Edit provider" : "New provider";
@@ -194,6 +254,28 @@ function syncProviderHelp() {
 		? "A base URL is required for custom OpenAI-compatible providers."
 		: `Default base URL: ${config.baseUrl}`;
 	providerHelp.textContent = `${config.label} default model: ${config.defaultModel}. ${baseUrlMessage}`;
+	renderApiKeyGuide(providerTypeSelect.value);
+}
+
+function renderApiKeyGuide(providerType) {
+	const guide = API_KEY_GUIDES[providerType] || API_KEY_GUIDES.gemini;
+	apiGuideSteps.innerHTML = "";
+
+	for (const step of guide.steps) {
+		const item = document.createElement("li");
+		item.textContent = step;
+		apiGuideSteps.appendChild(item);
+	}
+
+	if (guide.url) {
+		apiGuideLink.href = guide.url;
+		apiGuideLink.textContent = guide.linkLabel;
+		apiGuideLink.classList.remove("hidden");
+	} else {
+		apiGuideLink.removeAttribute("href");
+		apiGuideLink.textContent = "";
+		apiGuideLink.classList.add("hidden");
+	}
 }
 
 async function saveProfile() {
@@ -237,6 +319,7 @@ async function saveProfile() {
 	renderProviderList();
 	closeProviderModal();
 	setStatus("Provider saved.");
+	startAutoClose();
 }
 
 async function makeDefaultProvider(profileId) {
@@ -249,6 +332,7 @@ async function makeDefaultProvider(profileId) {
 	expandedProfileIds = new Set([profileId]);
 	renderProviderList();
 	setStatus("Default provider updated.");
+	startAutoClose();
 }
 
 async function deleteProfile() {
@@ -277,9 +361,77 @@ function toggleKeyVisibility() {
 	toggleKeyButton.textContent = isPassword ? "Hide" : "Show";
 }
 
+function startAutoClose() {
+	let secondsRemaining = 5;
+	clearAutoCloseTimers();
+	autoCloseBanner.classList.remove("hidden");
+	updateAutoCloseMessage(secondsRemaining);
+
+	autoCloseIntervalId = window.setInterval(() => {
+		secondsRemaining -= 1;
+		updateAutoCloseMessage(secondsRemaining);
+	}, 1000);
+	autoCloseTimerId = window.setTimeout(() => closeSettingsWindow("Settings saved. You can close this tab when ready."), secondsRemaining * 1000);
+}
+
+function cancelAutoClose() {
+	clearAutoCloseTimers();
+	autoCloseBanner.classList.add("hidden");
+}
+
+function clearAutoCloseTimers() {
+	if (autoCloseTimerId) {
+		window.clearTimeout(autoCloseTimerId);
+		autoCloseTimerId = 0;
+	}
+
+	if (autoCloseIntervalId) {
+		window.clearInterval(autoCloseIntervalId);
+		autoCloseIntervalId = 0;
+	}
+}
+
+function updateAutoCloseMessage(secondsRemaining) {
+	const safeSeconds = Math.max(secondsRemaining, 1);
+	autoCloseMessage.textContent = `Settings saved. Closing this window in ${safeSeconds} second${safeSeconds === 1 ? "" : "s"}.`;
+}
+
+function closeSettingsWindow(blockedMessage = "You can close this tab when ready.") {
+	clearAutoCloseTimers();
+	window.close();
+
+	window.setTimeout(() => {
+		autoCloseBanner.classList.add("hidden");
+		setStatus(blockedMessage);
+	}, 150);
+}
+
 function setStatus(message, isError = false) {
+	clearStatusHideTimer();
 	statusMessage.textContent = message;
 	statusMessage.classList.toggle("error", isError);
+
+	if (!message || isError) {
+		return;
+	}
+
+	const hideDelay = getStatusHideDelay(message);
+	statusHideTimerId = window.setTimeout(() => {
+		statusMessage.textContent = "";
+	}, hideDelay);
+}
+
+function getStatusHideDelay(message) {
+	const baseDelay = 3000;
+	const extraDelay = Math.min(String(message).length * 35, 2000);
+	return baseDelay + extraDelay;
+}
+
+function clearStatusHideTimer() {
+	if (statusHideTimerId) {
+		window.clearTimeout(statusHideTimerId);
+		statusHideTimerId = 0;
+	}
 }
 
 function escapeHtml(value) {

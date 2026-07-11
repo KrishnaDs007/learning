@@ -126,7 +126,6 @@ async function handleRun() {
 		copyButton.disabled = false;
 		setStatus(getSuccessMessage(source.text, profile));
 	} catch (error) {
-		console.error("Run failed:", error);
 		setError(error.message || "Could not complete this request.");
 	}
 }
@@ -433,4 +432,3 @@ function escapeHtml(value) {
 		return entities[character];
 	});
 }
-

@@ -17,7 +17,10 @@
             <p>Add providers, choose a default, and update saved model settings.</p>
           </div>
         </div>
-        <button id="new-btn" class="primary-button" type="button">New provider</button>
+        <div class="header-actions">
+          <button id="close-window-btn" class="secondary-button" type="button">Close window</button>
+          <button id="new-btn" class="primary-button" type="button">New provider</button>
+        </div>
       </div>
 
       <section class="provider-list-shell">
@@ -27,6 +30,11 @@
         </div>
         <div id="provider-list" class="provider-list"></div>
       </section>
+
+      <div id="auto-close-banner" class="auto-close-banner hidden" role="status">
+        <span id="auto-close-message">Settings saved. Closing this window shortly.</span>
+        <button id="cancel-auto-close-btn" class="secondary-button" type="button">Cancel auto-close</button>
+      </div>
 
       <p id="status-message" class="status-message" role="status"></p>
     </section>
@@ -74,6 +82,14 @@
           <button id="toggle-key-btn" class="secondary-button" type="button">Show</button>
         </div>
       </label>
+
+      <aside class="api-guide" aria-labelledby="api-guide-title">
+        <div>
+          <h3 id="api-guide-title">Get an API key</h3>
+          <ol id="api-guide-steps"></ol>
+        </div>
+        <a id="api-guide-link" class="secondary-button api-guide-link" href="#" target="_blank" rel="noreferrer">Open key page</a>
+      </aside>
 
       <label class="checkbox-field">
         <input type="checkbox" id="default-provider">

@@ -30,6 +30,18 @@ Users can:
 - Create a provider through a modal-style popup.
 - Expand saved provider cards to review or update details.
 - Keep non-default providers collapsed until they are needed.
+- Open provider-specific API key pages from the settings modal.
+- Follow short provider-specific steps before pasting the API key.
+
+## API Key Setup Links
+
+The settings page gives users direct landing links for each built-in provider:
+
+- Gemini: [Google AI Studio API keys](https://aistudio.google.com/app/apikey)
+- OpenAI / ChatGPT: [OpenAI API keys](https://platform.openai.com/api-keys)
+- Anthropic / Claude: [Anthropic Console API keys](https://platform.claude.com/settings/keys)
+- xAI / Grok: [xAI Console](https://console.x.ai/)
+- Custom OpenAI-compatible: use the provider's own dashboard, then paste the API key, base URL, and model name.
 
 ## Implementation Direction
 
@@ -55,6 +67,11 @@ This keeps the popup independent from provider-specific request shapes.
 - Non-default providers are collapsed to reduce noise.
 - Users can expand any saved provider card at any time.
 - Creating or editing a provider uses the same modal editor.
+
+## Gemini Model Note
+
+- The default Gemini model is `gemini-3.5-flash`.
+- Saved profiles using unavailable Gemini model names such as `gemini-2.5-flash-lite` are migrated to `gemini-3.5-flash`.
 
 ## Release Considerations
 

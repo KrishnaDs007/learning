@@ -8,6 +8,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 
 - Summarise webpage text with configured AI providers.
 - Configure Gemini, OpenAI / ChatGPT, Anthropic / Claude, xAI / Grok, or a custom OpenAI-compatible endpoint.
+- Gemini defaults to `gemini-3.5-flash`.
 - Choose from brief, detailed, and bullet-point summary modes.
 - Control summary length with short, medium, and long options.
 - Summarise selected text from the right-click context menu.
@@ -16,7 +17,10 @@ It supports summarising the full page content, selected text, pasted text, and u
 - Extract links only from page or text sources.
 - Copy generated summaries to the clipboard.
 - Use a cleaner popup with source status, loading, success, and error states.
-- Store the Gemini API key in Chrome extension storage.
+- Store provider API keys in Chrome extension storage.
+- Get provider-specific API key steps directly from the settings page.
+- Close the settings window manually or let it auto-close after saving.
+- Hide settings success messages automatically after a short readable delay.
 - Open the options page automatically when no API key is configured.
 
 ## Project Structure
@@ -30,7 +34,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 |-- src/
 |   |-- background/     # Extension install setup and context-menu flow
 |   |-- content/        # Webpage text extraction
-|   |-- options/        # Settings page for Gemini API key
+|   |-- options/        # Settings page for provider profiles and API keys
 |   |-- popup/          # Popup UI, provider request, and copy flow
 |   `-- shared/         # Prompt and provider client helpers
 `-- README.md
@@ -38,7 +42,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 
 ## Setup
 
-1. Get a Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+1. Get an API key from your chosen provider, such as [Google AI Studio](https://aistudio.google.com/app/apikey), [OpenAI](https://platform.openai.com/api-keys), [Anthropic](https://platform.claude.com/settings/keys), or [xAI](https://console.x.ai/).
 2. Open Chrome and go to `chrome://extensions`.
 3. Enable `Developer mode`.
 4. Click `Load unpacked`.
@@ -89,6 +93,9 @@ This is an early working version. The core extension flow is in place, and the f
 - Added links-only extraction.
 - Added multi-provider settings and provider selection.
 - Added expandable provider cards with modal creation/editing.
+- Added provider-specific API key setup steps inside the settings modal.
+- Added a settings close button and cancelable auto-close after provider saves.
+- Added auto-hiding success messages in settings.
 - Added a dismissible on-page summarisation prompt.
 - Reorganized files into `src/` and `assets/`.
 - Added generated icon assets for Chrome extension sizes.

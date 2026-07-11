@@ -8,7 +8,7 @@
 	const PROVIDERS = {
 		gemini: {
 			label: "Gemini",
-			defaultModel: "gemini-3.1-flash-lite",
+			defaultModel: "gemini-3.5-flash",
 			baseUrl: "https://generativelanguage.googleapis.com",
 			requiresBaseUrl: false,
 		},
@@ -38,6 +38,13 @@
 		},
 	};
 
+	const MODEL_REPLACEMENTS = {
+		"gemini-2.5-flash-lite": "gemini-3.5-flash",
+		"models/gemini-2.5-flash-lite": "gemini-3.5-flash",
+		"gemini-3.1-flash-lite-preview": "gemini-3.5-flash",
+		"models/gemini-3.1-flash-lite-preview": "gemini-3.5-flash",
+	};
+
 	function createId() {
 		return `provider-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 	}
@@ -48,12 +55,13 @@
 
 	function normalizeProfile(profile) {
 		const config = getProviderConfig(profile.type);
+		const requestedModel = profile.model || config.defaultModel;
 		return {
 			id: profile.id || createId(),
 			type: profile.type || "gemini",
 			name: profile.name || config.label,
 			apiKey: profile.apiKey || "",
-			model: profile.model || config.defaultModel,
+			model: MODEL_REPLACEMENTS[requestedModel] || requestedModel,
 			baseUrl: profile.baseUrl || config.baseUrl,
 			isDefault: Boolean(profile.isDefault),
 		};
@@ -78,7 +86,9 @@
 			: [];
 
 		if (profiles.length > 0) {
-			return markDefaultProfile(profiles, stored.defaultProviderId);
+			const markedProfiles = markDefaultProfile(profiles, stored.defaultProviderId);
+			await persistModelMigrations(stored.providerProfiles, markedProfiles, stored.defaultProviderId);
+			return markedProfiles;
 		}
 
 		if (stored.geminiApiKey) {
@@ -94,6 +104,15 @@
 		}
 
 		return [];
+	}
+
+	async function persistModelMigrations(originalProfiles, normalizedProfiles, defaultProfileId) {
+		const originalModels = (originalProfiles || []).map((profile) => profile.model || "");
+		const migrated = normalizedProfiles.some((profile, index) => profile.model !== originalModels[index]);
+
+		if (migrated) {
+			await saveProfiles(normalizedProfiles, defaultProfileId);
+		}
 	}
 
 	function markDefaultProfile(profiles, defaultProfileId) {
@@ -241,4 +260,3 @@
 		summarizeWithProvider,
 	};
 })();
-

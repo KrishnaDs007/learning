@@ -51,6 +51,12 @@ select {
 	margin-bottom: 28px;
 }
 
+.header-actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
 .brand {
 	display: flex;
 	align-items: center;
@@ -267,6 +273,56 @@ select:focus {
 	min-height: 18px;
 }
 
+.api-guide {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 16px;
+	margin: 2px 0 18px;
+	padding: 14px;
+	border: 1px solid #c7ddd9;
+	border-radius: 8px;
+	background: #f2faf8;
+}
+
+.api-guide h3 {
+	margin: 0 0 8px;
+	font-size: 14px;
+	letter-spacing: 0;
+}
+
+.api-guide ol {
+	display: grid;
+	gap: 6px;
+	margin: 0;
+	padding-left: 20px;
+	color: var(--muted);
+	font-size: 13px;
+	line-height: 1.45;
+}
+
+.api-guide-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.auto-close-banner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-top: 16px;
+	padding: 12px 14px;
+	border: 1px solid #c7ddd9;
+	border-radius: 8px;
+	background: #f2faf8;
+	color: var(--primary-strong);
+	font-weight: 800;
+}
+
 .primary-button,
 .secondary-button,
 .icon-button {
@@ -400,6 +456,8 @@ select:focus {
 
 	.header-row,
 	.brand,
+	.header-actions,
+	.auto-close-banner,
 	.modal-actions {
 		align-items: stretch;
 		flex-direction: column;
@@ -408,6 +466,7 @@ select:focus {
 	.input-row,
 	.provider-grid,
 	.form-grid,
+	.api-guide,
 	dl {
 		grid-template-columns: 1fr;
 	}
