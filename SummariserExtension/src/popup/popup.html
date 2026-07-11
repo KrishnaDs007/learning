@@ -19,7 +19,47 @@
       <button id="settings-btn" class="settings-button" type="button">Settings</button>
     </header>
 
+    <section class="controls" aria-label="Source controls">
+      <label class="field">
+        <span>Source</span>
+        <select id="source-type">
+          <option value="page">Page / selected text</option>
+          <option value="paste">Paste text</option>
+          <option value="upload">Upload file</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Provider</span>
+        <select id="provider-select"></select>
+      </label>
+    </section>
+
+    <section id="paste-panel" class="input-panel hidden">
+      <label class="field" for="paste-input">
+        <span>Text to summarise</span>
+        <textarea id="paste-input" placeholder="Paste text here..."></textarea>
+      </label>
+    </section>
+
+    <section id="upload-panel" class="input-panel hidden">
+      <label class="file-drop" for="file-input">
+        <strong>Choose a text-based file</strong>
+        <span>.txt, .md, .csv, .json, .html are supported now. PDF/DOCX are planned.</span>
+      </label>
+      <input id="file-input" type="file" accept=".txt,.md,.csv,.json,.html,.htm,text/plain,text/markdown,text/csv,application/json,text/html">
+      <p id="file-label" class="file-label">No file selected</p>
+    </section>
+
     <section class="controls" aria-label="Summary controls">
+      <label class="field">
+        <span>Output</span>
+        <select id="output-mode">
+          <option value="summary">Summary</option>
+          <option value="links">Links only</option>
+        </select>
+      </label>
+
       <label class="field">
         <span>Style</span>
         <select id="summary-type">
@@ -41,22 +81,25 @@
     </section>
 
     <section id="status" class="status" aria-live="polite">
-      Choose a style, then summarise the current page or selected text.
+      Choose a source, provider, and output mode.
     </section>
 
     <section id="result" class="result" aria-live="polite">
       <div class="empty-state">
-        <strong>No summary yet</strong>
-        <span>Select text and right-click, or open this popup on any article.</span>
+        <strong>No output yet</strong>
+        <span>Summarise a page, paste text, upload a text file, or extract links.</span>
       </div>
     </section>
 
     <footer class="actions">
-      <button id="summarise" class="primary-button" type="button">Summarise</button>
+      <button id="summarise" class="primary-button" type="button">Run</button>
       <button id="copy-btn" class="secondary-button" type="button">Copy</button>
     </footer>
   </main>
 
+  <script src="../shared/prompts.js"></script>
+  <script src="../shared/providers.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
+

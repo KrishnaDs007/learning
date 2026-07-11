@@ -1,0 +1,55 @@
+# Release Readiness Checklist
+
+## Product Scope
+
+- Confirm supported input modes:
+  - Done: current page
+  - Done: selected text
+  - Done: pasted text
+  - Done: uploaded text files
+  - PDF/DOC/DOCX only after a real parsing or provider-file strategy is implemented
+- Confirm supported output modes:
+  - Brief summary
+  - Detailed summary
+  - Bullets
+  - Key takeaways
+  - Done: links only
+- Confirm supported providers:
+  - Done: Gemini
+  - Done: OpenAI / ChatGPT API
+  - Done: Anthropic / Claude API
+  - Done: xAI / Grok API
+  - Done: Custom OpenAI-compatible endpoint
+
+## Privacy And Permissions
+
+- Add a privacy document explaining what text is collected and where it is sent.
+- Explain that the active provider receives the summarised source text.
+- Explain how API keys are stored.
+- Review whether `chrome.storage.sync` or `chrome.storage.local` is more appropriate.
+- Review whether `<all_urls>` is necessary or whether active-tab-only behavior is enough.
+- Add Chrome Web Store permission explanations.
+
+## Chrome Web Store Assets
+
+- Extension icon sizes: 16, 32, 48, 128.
+- Store screenshots.
+- Short description.
+- Detailed description.
+- Privacy practices text.
+- Support/contact information if publishing publicly.
+
+## Pre-release Manual Checks
+
+Testing automation is not planned for the current pass, but before release manually check:
+
+- Normal webpage summary.
+- Selected-text summary.
+- Pasted-text summary.
+- Text-file upload summary.
+- Link extraction mode.
+- Missing API key state.
+- Invalid API key state.
+- Provider switching.
+- Blocked pages such as `chrome://` pages.
+- Extension reload after settings changes.

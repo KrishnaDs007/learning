@@ -1,9 +1,11 @@
-const GEMINI_MODEL = "gemini-3.1-flash-lite";
-const MAX_INPUT_CHARS = 6000;
+const MIN_TEXT_LENGTH = 40;
+const SUPPORTED_TEXT_FILE_EXTENSIONS = [".txt", ".md", ".csv", ".json", ".html", ".htm"];
 
 const state = {
-	lastSummary: "",
+	lastOutput: "",
 	source: null,
+	profiles: [],
+	uploadedFile: null,
 };
 
 const summariseButton = document.getElementById("summarise");
@@ -12,155 +14,349 @@ const settingsButton = document.getElementById("settings-btn");
 const result = document.getElementById("result");
 const status = document.getElementById("status");
 const sourceLabel = document.getElementById("source-label");
+const sourceTypeSelect = document.getElementById("source-type");
+const providerSelect = document.getElementById("provider-select");
+const outputModeSelect = document.getElementById("output-mode");
 const summaryTypeSelect = document.getElementById("summary-type");
 const summaryLengthSelect = document.getElementById("summary-length");
+const pastePanel = document.getElementById("paste-panel");
+const pasteInput = document.getElementById("paste-input");
+const uploadPanel = document.getElementById("upload-panel");
+const fileInput = document.getElementById("file-input");
+const fileLabel = document.getElementById("file-label");
 
 document.addEventListener("DOMContentLoaded", initialisePopup);
-summariseButton.addEventListener("click", handleSummarise);
-copyButton.addEventListener("click", copySummary);
+summariseButton.addEventListener("click", handleRun);
+copyButton.addEventListener("click", copyOutput);
 settingsButton.addEventListener("click", () => chrome.runtime.openOptionsPage());
+sourceTypeSelect.addEventListener("change", syncSourcePanels);
+outputModeSelect.addEventListener("change", syncOutputControls);
+fileInput.addEventListener("change", handleFileSelected);
 
-function initialisePopup() {
+async function initialisePopup() {
 	copyButton.disabled = true;
 	chrome.action.setBadgeText({ text: "" });
+	await loadProviders();
+	syncSourcePanels();
+	syncOutputControls();
 
 	chrome.storage.local.get(["pendingSummaryText", "pendingSummarySource"], ({ pendingSummaryText, pendingSummarySource }) => {
 		if (pendingSummaryText) {
 			state.source = pendingSummarySource || { type: "selection" };
 			setSourceLabel(state.source);
-			setStatus("Selected text is ready. Click Summarise to continue.");
+			setStatus("Selected text is ready. Click Run to continue.");
 			return;
 		}
 
-		setStatus("Choose a style, then summarise the current page or selected text.");
+		setStatus("Choose a source, provider, and output mode.");
 	});
 }
 
-function handleSummarise() {
-	const summaryType = summaryTypeSelect.value;
-	const summaryLength = summaryLengthSelect.value;
+async function loadProviders() {
+	state.profiles = await ProviderRegistry.getProfiles();
+	providerSelect.innerHTML = "";
 
-	setLoading();
+	if (state.profiles.length === 0) {
+		const option = document.createElement("option");
+		option.value = "";
+		option.textContent = "No provider configured";
+		providerSelect.appendChild(option);
+		return;
+	}
 
-	chrome.storage.sync.get(["geminiApiKey"], ({ geminiApiKey }) => {
-		if (!geminiApiKey) {
-			setError("No Gemini API key found. Opening settings so you can add one.");
+	for (const profile of state.profiles) {
+		const config = ProviderRegistry.getProviderConfig(profile.type);
+		const option = document.createElement("option");
+		option.value = profile.id;
+		option.textContent = `${profile.name || config.label} · ${profile.model}`;
+		option.selected = profile.isDefault;
+		providerSelect.appendChild(option);
+	}
+}
+
+function syncSourcePanels() {
+	const sourceType = sourceTypeSelect.value;
+	pastePanel.classList.toggle("hidden", sourceType !== "paste");
+	uploadPanel.classList.toggle("hidden", sourceType !== "upload");
+}
+
+function syncOutputControls() {
+	const isLinksOnly = outputModeSelect.value === "links";
+	summaryTypeSelect.disabled = isLinksOnly;
+	summaryLengthSelect.disabled = isLinksOnly;
+	providerSelect.disabled = isLinksOnly;
+}
+
+function handleFileSelected() {
+	const file = fileInput.files && fileInput.files[0];
+	state.uploadedFile = file || null;
+	fileLabel.textContent = file ? `${file.name} · ${formatBytes(file.size)}` : "No file selected";
+}
+
+async function handleRun() {
+	const outputMode = outputModeSelect.value;
+	setLoading(outputMode === "links" ? "Extracting links..." : "Preparing summary...");
+
+	try {
+		const source = await getSelectedSource(outputMode);
+		state.source = source.source;
+		setSourceLabel(source.source);
+
+		if (outputMode === "links") {
+			const links = source.links && source.links.length > 0 ? source.links : extractLinksFromText(source.text);
+			renderLinks(links);
+			return;
+		}
+
+		const profile = getSelectedProvider();
+		if (!profile) {
+			setError("Add a provider API key in settings before summarising.");
 			chrome.runtime.openOptionsPage();
 			return;
 		}
 
+		const prompt = SummariserPrompts.buildSummaryPrompt(
+			source.text,
+			summaryTypeSelect.value,
+			summaryLengthSelect.value,
+		);
+		const summary = await ProviderRegistry.summarizeWithProvider(profile, prompt);
+		state.lastOutput = summary;
+		result.textContent = summary;
+		copyButton.disabled = false;
+		setStatus(getSuccessMessage(source.text, profile));
+	} catch (error) {
+		console.error("Run failed:", error);
+		setError(error.message || "Could not complete this request.");
+	}
+}
+
+function getSelectedProvider() {
+	return state.profiles.find((profile) => profile.id === providerSelect.value) || state.profiles[0] || null;
+}
+
+async function getSelectedSource(outputMode) {
+	const sourceType = sourceTypeSelect.value;
+
+	if (sourceType === "paste") {
+		const text = pasteInput.value.trim();
+		if (!text) {
+			throw new Error("Paste text before running.");
+		}
+		return {
+			text,
+			links: extractLinksFromText(text),
+			source: { type: "paste", title: "Pasted text", wordCount: countWords(text) },
+		};
+	}
+
+	if (sourceType === "upload") {
+		const text = await readUploadedTextFile();
+		return {
+			text,
+			links: extractLinksFromText(text),
+			source: {
+				type: "upload",
+				title: state.uploadedFile.name,
+				wordCount: countWords(text),
+			},
+		};
+	}
+
+	return getPageSource(outputMode);
+}
+
+async function getPageSource(outputMode) {
+	const pending = await getPendingSource();
+	if (pending && outputMode !== "links") {
+		return pending;
+	}
+
+	const tabs = await queryActiveTab();
+	const tab = tabs[0];
+	const messageType = outputMode === "links" ? "GET_PAGE_LINKS" : "GET_ARTICLE_TEXT";
+	const response = await requestPageData(tab.id, messageType);
+
+	if (outputMode === "links") {
+		return {
+			text: "",
+			links: response.links || [],
+			source: response.source || { type: "page" },
+		};
+	}
+
+	if (!hasExtractedText(response)) {
+		throw new Error("I could not find enough readable text on this page.");
+	}
+
+	return {
+		text: response.text,
+		links: response.links || [],
+		source: response.source || { type: "page" },
+	};
+}
+
+function getPendingSource() {
+	return new Promise((resolve) => {
 		chrome.storage.local.get(["pendingSummaryText", "pendingSummarySource"], ({ pendingSummaryText, pendingSummarySource }) => {
-			if (pendingSummaryText) {
-				chrome.storage.local.remove(["pendingSummaryText", "pendingSummarySource"]);
-				state.source = pendingSummarySource || { type: "selection" };
-				setSourceLabel(state.source);
-				summarizeText(pendingSummaryText, summaryType, summaryLength, geminiApiKey);
+			if (!pendingSummaryText) {
+				resolve(null);
 				return;
 			}
 
-			summarizeCurrentPage(summaryType, summaryLength, geminiApiKey);
-		});
-	});
-}
-
-function summarizeCurrentPage(summaryType, summaryLength, geminiApiKey) {
-	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-		if (!tabs || tabs.length === 0 || !tabs[0].id) {
-			setError("No active tab found.");
-			return;
-		}
-
-		requestArticleText(tabs[0].id, async (response) => {
-			if (!hasExtractedText(response)) {
-				return;
-			}
-
-			state.source = response.source;
-			setSourceLabel(response.source);
-			await summarizeText(response.text, summaryType, summaryLength, geminiApiKey);
-		});
-	});
-}
-
-function requestArticleText(tabId, onTextReceived) {
-	chrome.tabs.sendMessage(tabId, { type: "GET_ARTICLE_TEXT" }, (response) => {
-		if (!chrome.runtime.lastError) {
-			onTextReceived(response);
-			return;
-		}
-
-		setStatus("Preparing this page for summarisation...");
-
-		chrome.scripting
-			.executeScript({
-				target: { tabId },
-				files: ["src/content/content.js"],
-			})
-			.then(() => {
-				chrome.tabs.sendMessage(tabId, { type: "GET_ARTICLE_TEXT" }, (retryResponse) => {
-					if (chrome.runtime.lastError) {
-						setError("This page cannot be summarised. Try a normal webpage or selected text.");
-						return;
-					}
-
-					onTextReceived(retryResponse);
-				});
-			})
-			.catch(() => {
-				setError("Chrome blocked access to this page. Try selecting text manually on a normal webpage.");
+			chrome.storage.local.remove(["pendingSummaryText", "pendingSummarySource"]);
+			resolve({
+				text: pendingSummaryText,
+				links: extractLinksFromText(pendingSummaryText),
+				source: pendingSummarySource || { type: "selection" },
 			});
+		});
+	});
+}
+
+function queryActiveTab() {
+	return new Promise((resolve, reject) => {
+		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+			if (!tabs || tabs.length === 0 || !tabs[0].id) {
+				reject(new Error("No active tab found."));
+				return;
+			}
+			resolve(tabs);
+		});
+	});
+}
+
+function requestPageData(tabId, messageType) {
+	return new Promise((resolve, reject) => {
+		chrome.tabs.sendMessage(tabId, { type: messageType }, (response) => {
+			if (!chrome.runtime.lastError) {
+				resolve(response);
+				return;
+			}
+
+			setStatus("Preparing this page...");
+			chrome.scripting
+				.executeScript({
+					target: { tabId },
+					files: ["src/content/content.js"],
+				})
+				.then(() => {
+					chrome.tabs.sendMessage(tabId, { type: messageType }, (retryResponse) => {
+						if (chrome.runtime.lastError) {
+							reject(new Error("This page cannot be read. Try selected text, pasted text, or a text file."));
+							return;
+						}
+
+						resolve(retryResponse);
+					});
+				})
+				.catch(() => {
+					reject(new Error("Chrome blocked access to this page. Try selected text, pasted text, or a text file."));
+				});
+		});
+	});
+}
+
+function readUploadedTextFile() {
+	return new Promise((resolve, reject) => {
+		const file = state.uploadedFile;
+		if (!file) {
+			reject(new Error("Choose a file before running."));
+			return;
+		}
+
+		const lowerName = file.name.toLowerCase();
+		const isSupported = SUPPORTED_TEXT_FILE_EXTENSIONS.some((extension) => lowerName.endsWith(extension));
+		if (!isSupported) {
+			reject(new Error("This upload type is planned, but only text-based files are supported right now."));
+			return;
+		}
+
+		const reader = new FileReader();
+		reader.onload = () => {
+			const text = String(reader.result || "").trim();
+			if (!text) {
+				reject(new Error("The selected file does not contain readable text."));
+				return;
+			}
+			resolve(text);
+		};
+		reader.onerror = () => reject(new Error("Could not read the selected file."));
+		reader.readAsText(file);
 	});
 }
 
 function hasExtractedText(response) {
 	const text = response && response.text;
-	if (!text || text.trim().length < 40) {
-		setError("I could not find enough readable text on this page.");
-		return false;
-	}
-
-	return true;
+	return Boolean(text && text.trim().length >= MIN_TEXT_LENGTH);
 }
 
-async function summarizeText(text, summaryType, summaryLength, geminiApiKey) {
-	try {
-		const summary = await getGeminiSummary(text, summaryType, summaryLength, geminiApiKey);
-		state.lastSummary = summary;
-		result.textContent = summary;
-		copyButton.disabled = false;
-		setStatus(getSuccessMessage(text));
-	} catch (error) {
-		console.error("Error fetching summary:", error);
-		setError(error.message || "Gemini could not generate a summary right now.");
+function renderLinks(links) {
+	const uniqueLinks = dedupeLinks(links);
+	if (uniqueLinks.length === 0) {
+		state.lastOutput = "";
+		copyButton.disabled = true;
+		setError("No links were found in this source.");
+		return;
 	}
+
+	state.lastOutput = uniqueLinks.map((link) => {
+		const label = link.text ? `${link.text} - ` : "";
+		return `${label}${link.url}`;
+	}).join("\n");
+	result.textContent = state.lastOutput;
+	copyButton.disabled = false;
+	setStatus(`${uniqueLinks.length} link${uniqueLinks.length === 1 ? "" : "s"} extracted.`);
 }
 
-async function copySummary() {
-	if (!state.lastSummary) {
+function extractLinksFromText(text) {
+	const matches = text.match(/https?:\/\/[^\s<>"')]+/g) || [];
+	return matches.map((url) => ({ text: "", url }));
+}
+
+function dedupeLinks(links) {
+	const seen = new Set();
+	return links
+		.filter((link) => link && link.url)
+		.map((link) => ({
+			text: (link.text || "").trim(),
+			url: link.url.trim(),
+		}))
+		.filter((link) => {
+			if (seen.has(link.url)) {
+				return false;
+			}
+			seen.add(link.url);
+			return true;
+		});
+}
+
+async function copyOutput() {
+	if (!state.lastOutput) {
 		return;
 	}
 
 	try {
-		await navigator.clipboard.writeText(state.lastSummary);
+		await navigator.clipboard.writeText(state.lastOutput);
 		const originalText = copyButton.textContent;
 		copyButton.textContent = "Copied";
 		setTimeout(() => {
 			copyButton.textContent = originalText;
 		}, 1400);
 	} catch (error) {
-		setError("Could not copy the summary. Select the text and copy it manually.");
+		setError("Could not copy the output. Select the text and copy it manually.");
 	}
 }
 
-function setLoading() {
+function setLoading(message) {
 	summariseButton.disabled = true;
 	copyButton.disabled = true;
 	status.classList.remove("error");
-	status.textContent = "Summarising with Gemini...";
+	status.textContent = message;
 	result.innerHTML = `
 		<div class="loading">
 			<div class="loader"></div>
-			<span>Reading the page and preparing a clean summary</span>
+			<span>${escapeHtml(message)}</span>
 		</div>
 	`;
 }
@@ -173,12 +369,12 @@ function setStatus(message) {
 
 function setError(message) {
 	summariseButton.disabled = false;
-	copyButton.disabled = !state.lastSummary;
+	copyButton.disabled = !state.lastOutput;
 	status.classList.add("error");
 	status.textContent = message;
 	result.innerHTML = `
 		<div class="empty-state">
-			<strong>Could not summarise</strong>
+			<strong>Could not complete request</strong>
 			<span>${escapeHtml(message)}</span>
 		</div>
 	`;
@@ -195,79 +391,38 @@ function setSourceLabel(source) {
 		return;
 	}
 
+	if (source.type === "paste" || source.type === "upload") {
+		sourceLabel.textContent = `${source.title || "Custom source"}${source.wordCount ? ` - ${source.wordCount} words` : ""}`;
+		return;
+	}
+
 	const domain = source.domain || "current page";
-	const words = source.wordCount ? ` · ${source.wordCount} words` : "";
+	const words = source.wordCount ? ` - ${source.wordCount} words` : "";
 	sourceLabel.textContent = `${domain}${words}`;
 }
 
-function getSuccessMessage(text) {
-	const words = text.split(/\s+/).filter(Boolean).length;
-	const sourceType = state.source && state.source.type === "selection" ? "selection" : "page";
-	return `Summary ready from ${sourceType} content · ${words} words read`;
+function getSuccessMessage(text, profile) {
+	const words = countWords(text);
+	const sourceType = state.source && state.source.type ? state.source.type : "page";
+	return `Summary ready from ${sourceType} content - ${words} words read with ${profile.name}.`;
 }
 
-async function getGeminiSummary(rawText, summaryType, summaryLength, geminiApiKey) {
-	const text =
-		rawText.length > MAX_INPUT_CHARS
-			? rawText.slice(0, MAX_INPUT_CHARS) + "..."
-			: rawText;
+function countWords(text) {
+	return text.split(/\s+/).filter(Boolean).length;
+}
 
-	const prompt = buildPrompt(text, summaryType, summaryLength);
-	const res = await fetch(
-		`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${geminiApiKey}`,
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-goog-api-key": geminiApiKey,
-			},
-			body: JSON.stringify({
-				contents: [
-					{
-						parts: [{ text: prompt }],
-					},
-				],
-				generationConfig: {
-					temperature: 0.2,
-				},
-			}),
-		},
-	);
-
-	if (!res.ok) {
-		const body = await res.json().catch(() => ({}));
-		throw new Error(body.error?.message || "Failed to fetch summary from Gemini API.");
+function formatBytes(bytes) {
+	if (bytes < 1024) {
+		return `${bytes} B`;
 	}
-
-	const data = await res.json();
-	return data?.candidates?.[0]?.content?.parts?.[0]?.text || "No summary generated.";
-}
-
-function buildPrompt(text, summaryType, summaryLength) {
-	const lengthInstructions = {
-		short: "Keep it very concise in 3-4 sentences.",
-		medium: "Keep it useful and compact in 2-4 short paragraphs.",
-		long: "Provide a fuller summary with important context and nuance.",
-	};
-
-	const styleInstructions = {
-		brief: "Write a clear plain-language summary.",
-		detailed: "Write a detailed but readable summary.",
-		bullets: "Write the summary as bullet points.",
-		takeaways: "Extract the key takeaways and practical implications.",
-	};
-
-	return [
-		styleInstructions[summaryType] || styleInstructions.brief,
-		lengthInstructions[summaryLength] || lengthInstructions.medium,
-		"Do not invent facts. Preserve important names, numbers, and dates.",
-		"Text to summarise:",
-		text,
-	].join("\n\n");
+	if (bytes < 1024 * 1024) {
+		return `${Math.round(bytes / 1024)} KB`;
+	}
+	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function escapeHtml(value) {
-	return value.replace(/[&<>"']/g, (character) => {
+	return String(value).replace(/[&<>"']/g, (character) => {
 		const entities = {
 			"&": "&amp;",
 			"<": "&lt;",

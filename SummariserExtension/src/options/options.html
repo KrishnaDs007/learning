@@ -13,33 +13,65 @@
         <img src="../../assets/icons/icon-48.png" alt="" class="brand-icon">
         <div>
           <h1>AI Summariser Settings</h1>
-          <p>Connect your Gemini API key to start summarising webpages.</p>
+          <p>Add one or more AI providers, then choose the default for summaries.</p>
         </div>
       </div>
 
+      <section class="provider-grid">
+        <label class="field">
+          <span>Saved providers</span>
+          <select id="profile-select"></select>
+        </label>
+
+        <label class="field">
+          <span>Provider type</span>
+          <select id="provider-type"></select>
+        </label>
+      </section>
+
+      <section class="form-grid">
+        <label class="field" for="profile-name">
+          <span>Display name</span>
+          <input type="text" id="profile-name" placeholder="Gemini personal key">
+        </label>
+
+        <label class="field" for="model-name">
+          <span>Model</span>
+          <input type="text" id="model-name" placeholder="Model name">
+        </label>
+      </section>
+
       <label class="field" for="api-key">
-        <span>Gemini API key</span>
+        <span>API key</span>
         <div class="input-row">
-          <input type="password" id="api-key" placeholder="Paste your Gemini API key">
+          <input type="password" id="api-key" placeholder="Paste provider API key">
           <button id="toggle-key-btn" class="secondary-button" type="button">Show</button>
         </div>
       </label>
 
-      <p class="help-text">
-        Create a key in
-        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer">Google AI Studio</a>.
-        Your key is stored in Chrome extension storage.
-      </p>
+      <label class="field" for="base-url">
+        <span>Base URL</span>
+        <input type="text" id="base-url" placeholder="Provider API base URL">
+      </label>
+
+      <label class="checkbox-field">
+        <input type="checkbox" id="default-provider">
+        <span>Use as default provider</span>
+      </label>
+
+      <p id="provider-help" class="help-text"></p>
 
       <div class="actions">
-        <button id="save-btn" class="primary-button" type="button">Save settings</button>
-        <button id="clear-btn" class="secondary-button" type="button">Clear key</button>
+        <button id="new-btn" class="secondary-button" type="button">New provider</button>
+        <button id="save-btn" class="primary-button" type="button">Save provider</button>
+        <button id="delete-btn" class="secondary-button danger-button" type="button">Delete</button>
       </div>
 
       <p id="status-message" class="status-message" role="status"></p>
     </section>
   </main>
 
+  <script src="../shared/providers.js"></script>
   <script src="options.js"></script>
 </body>
 </html>
