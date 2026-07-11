@@ -8,8 +8,10 @@ It supports summarising the full page content from the popup and selected text f
 
 - Summarise webpage text with Gemini.
 - Choose from brief, detailed, and bullet-point summary modes.
+- Control summary length with short, medium, and long options.
 - Summarise selected text from the right-click context menu.
 - Copy generated summaries to the clipboard.
+- Use a cleaner popup with source status, loading, success, and error states.
 - Store the Gemini API key in Chrome extension storage.
 - Open the options page automatically when no API key is configured.
 
@@ -17,15 +19,16 @@ It supports summarising the full page content from the popup and selected text f
 
 ```text
 .
-|-- background.js       # Extension install setup and context-menu flow
-|-- content.js          # Extracts article or paragraph text from webpages
+|-- assets/
+|   `-- icons/          # Extension icon assets in Chrome-required sizes
 |-- docs/               # Project analysis, roadmap, and future docs
-|-- icon.png            # Extension icon
 |-- manifest.json       # Chrome extension manifest
-|-- option.html         # Settings page for Gemini API key
-|-- option.js           # Saves and loads API key settings
-|-- popup.html          # Extension popup UI
-`-- popup.js            # Popup behavior, Gemini request, and copy flow
+|-- src/
+|   |-- background/     # Extension install setup and context-menu flow
+|   |-- content/        # Webpage text extraction
+|   |-- options/        # Settings page for Gemini API key
+|   `-- popup/          # Popup UI, Gemini request, and copy flow
+`-- README.md
 ```
 
 ## Setup
@@ -62,6 +65,9 @@ This is an early working version. The core extension flow is in place, and the f
 - Added selected-text summarisation flow.
 - Removed sensitive debug logging.
 - Added Copy button behavior.
+- Added a more professional popup and options experience.
+- Reorganized files into `src/` and `assets/`.
+- Added generated icon assets for Chrome extension sizes.
 - Added project documentation.
 - Added `.gitignore`.
 
@@ -69,12 +75,10 @@ This is an early working version. The core extension flow is in place, and the f
 
 Next priorities:
 
-- Improve user-facing error states.
-- Move inline CSS into dedicated stylesheet files.
 - Refactor Gemini request logic into a separate module.
 - Improve webpage text extraction.
-- Add a more professional popup design.
 - Add release and privacy documentation before publishing.
+- Test the selected-text popup flow in Chrome.
 
 See [docs/roadmap.md](./docs/roadmap.md) for the detailed plan.
 

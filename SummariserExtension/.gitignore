@@ -6,10 +6,12 @@ dist/
 build/
 out/
 release/
-docs/
 *.zip
 *.crx
 *.pem
+
+# Local learning notes
+learning/
 
 # Environment and secrets
 .env
@@ -33,4 +35,3 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
-

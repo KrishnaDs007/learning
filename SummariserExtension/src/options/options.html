@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Summariser Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main class="settings-shell">
+    <section class="settings-panel">
+      <div class="brand">
+        <img src="../../assets/icons/icon-48.png" alt="" class="brand-icon">
+        <div>
+          <h1>AI Summariser Settings</h1>
+          <p>Connect your Gemini API key to start summarising webpages.</p>
+        </div>
+      </div>
+
+      <label class="field" for="api-key">
+        <span>Gemini API key</span>
+        <div class="input-row">
+          <input type="password" id="api-key" placeholder="Paste your Gemini API key">
+          <button id="toggle-key-btn" class="secondary-button" type="button">Show</button>
+        </div>
+      </label>
+
+      <p class="help-text">
+        Create a key in
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer">Google AI Studio</a>.
+        Your key is stored in Chrome extension storage.
+      </p>
+
+      <div class="actions">
+        <button id="save-btn" class="primary-button" type="button">Save settings</button>
+        <button id="clear-btn" class="secondary-button" type="button">Clear key</button>
+      </div>
+
+      <p id="status-message" class="status-message" role="status"></p>
+    </section>
+  </main>
+
+  <script src="options.js"></script>
+</body>
+</html>
+

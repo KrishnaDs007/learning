@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Summariser</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <img src="../../assets/icons/icon-48.png" alt="" class="brand-icon">
+        <div>
+          <h1>AI Summariser</h1>
+          <p id="source-label">Ready to summarise this page</p>
+        </div>
+      </div>
+      <button id="settings-btn" class="settings-button" type="button">Settings</button>
+    </header>
+
+    <section class="controls" aria-label="Summary controls">
+      <label class="field">
+        <span>Style</span>
+        <select id="summary-type">
+          <option value="brief">Brief</option>
+          <option value="detailed">Detailed</option>
+          <option value="bullets">Bullets</option>
+          <option value="takeaways">Key takeaways</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Length</span>
+        <select id="summary-length">
+          <option value="short">Short</option>
+          <option value="medium" selected>Medium</option>
+          <option value="long">Long</option>
+        </select>
+      </label>
+    </section>
+
+    <section id="status" class="status" aria-live="polite">
+      Choose a style, then summarise the current page or selected text.
+    </section>
+
+    <section id="result" class="result" aria-live="polite">
+      <div class="empty-state">
+        <strong>No summary yet</strong>
+        <span>Select text and right-click, or open this popup on any article.</span>
+      </div>
+    </section>
+
+    <footer class="actions">
+      <button id="summarise" class="primary-button" type="button">Summarise</button>
+      <button id="copy-btn" class="secondary-button" type="button">Copy</button>
+    </footer>
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+</html>
