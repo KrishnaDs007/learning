@@ -3,8 +3,9 @@ const PROMPT_STORAGE_KEY = "aiSummariserPromptTop";
 const MIN_PROMPT_TEXT_LENGTH = 600;
 const PROMPT_REAPPEAR_DELAY_MS = 12000;
 const PROMPT_EDGE_OFFSET = 0;
-const PROMPT_ICON_WIDTH = 38;
-const PROMPT_ICON_HEIGHT = 40;
+const PROMPT_ICON_WIDTH = 34;
+const PROMPT_ICON_HEIGHT = 36;
+const PROMPT_HOVER_TOP_SPACE = 44;
 
 function cleanText(value) {
 	return value.replace(/\s+/g, " ").trim();
@@ -84,7 +85,7 @@ function getPageMetadata(text, type = "page") {
 }
 
 function getPromptTop() {
-	const fallbackTop = Math.max(16, Math.round(window.innerHeight * 0.55));
+	const fallbackTop = Math.max(PROMPT_HOVER_TOP_SPACE, Math.round(window.innerHeight * 0.55));
 	let savedTop = Number.NaN;
 
 	try {
@@ -114,8 +115,8 @@ function setPromptTop(top) {
 }
 
 function clampPromptTop(top) {
-	const maxTop = Math.max(16, window.innerHeight - PROMPT_ICON_HEIGHT - 16);
-	return Math.min(Math.max(16, Math.round(top)), maxTop);
+	const maxTop = Math.max(PROMPT_HOVER_TOP_SPACE, window.innerHeight - PROMPT_ICON_HEIGHT - 16);
+	return Math.min(Math.max(PROMPT_HOVER_TOP_SPACE, Math.round(top)), maxTop);
 }
 
 function openSummariserPopup(prompt, text) {
@@ -145,16 +146,13 @@ function injectPagePrompt() {
 	}
 
 	const prompt = document.createElement("aside");
+	const iconUrl = chrome.runtime.getURL("assets/icons/icon-32.png");
 	prompt.id = PROMPT_ID;
 	prompt.innerHTML = `
 		<span class="ai-summariser-tooltip">Open summariser</span>
 		<button class="ai-summariser-close" type="button" aria-label="Hide AI Summariser">x</button>
 		<button class="ai-summariser-icon" type="button" aria-label="Open AI Summariser for this page">
-			<span class="ai-summariser-icon-face" aria-hidden="true">
-				<span></span>
-				<span></span>
-				<i></i>
-			</span>
+			<img class="ai-summariser-icon-image" src="${iconUrl}" alt="" aria-hidden="true">
 		</button>
 	`;
 
@@ -166,7 +164,7 @@ function injectPagePrompt() {
 			top: ${getPromptTop()}px;
 			z-index: 2147483647;
 			width: ${PROMPT_ICON_WIDTH}px;
-			height: ${PROMPT_ICON_HEIGHT}px;
+			height: ${PROMPT_ICON_HEIGHT + PROMPT_HOVER_TOP_SPACE}px;
 			font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 			opacity: 0.5;
 			touch-action: none;
@@ -180,7 +178,9 @@ function injectPagePrompt() {
 			display: none;
 		}
 		#${PROMPT_ID} .ai-summariser-icon {
-			position: relative;
+			position: absolute;
+			right: 0;
+			bottom: 0;
 			display: grid;
 			place-items: center;
 			width: ${PROMPT_ICON_WIDTH}px;
@@ -193,6 +193,7 @@ function injectPagePrompt() {
 			box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32), inset 3px 0 0 #a78bfa;
 			cursor: grab;
 			font: inherit;
+			animation: aiSummariserAttention 30s ease-in-out infinite;
 			transition: transform 140ms ease, box-shadow 140ms ease;
 		}
 		#${PROMPT_ID} .ai-summariser-icon:hover {
@@ -206,7 +207,7 @@ function injectPagePrompt() {
 		#${PROMPT_ID} .ai-summariser-tooltip {
 			position: absolute;
 			right: 0;
-			bottom: calc(100% + 8px);
+			top: 6px;
 			width: max-content;
 			max-width: 140px;
 			padding: 6px 9px;
@@ -228,12 +229,12 @@ function injectPagePrompt() {
 		}
 		#${PROMPT_ID} .ai-summariser-close {
 			position: absolute;
-			right: ${PROMPT_ICON_WIDTH - 8}px;
-			top: -10px;
+			right: ${PROMPT_ICON_WIDTH + 6}px;
+			bottom: 8px;
 			display: grid;
 			place-items: center;
-			width: 20px;
-			height: 20px;
+			width: 18px;
+			height: 18px;
 			padding: 0;
 			border: 1px solid rgba(255, 255, 255, 0.12);
 			border-radius: 999px;
@@ -256,43 +257,25 @@ function injectPagePrompt() {
 		#${PROMPT_ID} .ai-summariser-close:hover {
 			transform: scale(1.05);
 		}
-		#${PROMPT_ID} .ai-summariser-icon-face {
-			position: relative;
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			gap: 5px;
-			width: 22px;
-			height: 22px;
-			padding: 7px 5px;
-			border: 1px solid rgba(255, 255, 255, 0.38);
+		#${PROMPT_ID} .ai-summariser-icon-image {
+			width: 24px;
+			height: 24px;
 			border-radius: 7px;
-			background: linear-gradient(135deg, #ffffff 0%, #eef4ff 45%, #c084fc 100%);
-			box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.18), 0 0 14px rgba(192, 132, 252, 0.42);
-			animation: aiSummariserNudge 2.2s ease-in-out infinite;
+			filter: drop-shadow(0 0 9px rgba(192, 132, 252, 0.56));
+			pointer-events: none;
 		}
-		#${PROMPT_ID} .ai-summariser-icon-face span {
-			display: block;
-			width: 5px;
-			height: 5px;
-			border-radius: 999px;
-			background: #111827;
-		}
-		#${PROMPT_ID} .ai-summariser-icon-face i {
-			position: absolute;
-			right: 3px;
-			bottom: 2px;
-			width: 7px;
-			height: 7px;
-			border-radius: 999px;
-			background: #7c3aed;
-			box-shadow: 0 0 10px rgba(124, 58, 237, 0.72);
-		}
-		@keyframes aiSummariserNudge {
-			0%, 100% {
+		@keyframes aiSummariserAttention {
+			0%, 8%, 100% {
 				transform: translateY(0);
 			}
-			50% {
-				transform: translateY(-2px);
+			2% {
+				transform: translateY(-3px);
+			}
+			4% {
+				transform: translateY(2px);
+			}
+			6% {
+				transform: translateY(-1px);
 			}
 		}
 	`;
@@ -389,4 +372,3 @@ if (document.readyState === "loading") {
 } else {
 	injectPagePrompt();
 }
-
