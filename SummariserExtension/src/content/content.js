@@ -147,11 +147,13 @@ function injectPagePrompt() {
 	const prompt = document.createElement("aside");
 	prompt.id = PROMPT_ID;
 	prompt.innerHTML = `
+		<span class="ai-summariser-tooltip">Open summariser</span>
+		<button class="ai-summariser-close" type="button" aria-label="Hide AI Summariser">x</button>
 		<button class="ai-summariser-icon" type="button" aria-label="Open AI Summariser for this page">
-			<span class="ai-summariser-tooltip">Open summariser</span>
 			<span class="ai-summariser-icon-face" aria-hidden="true">
 				<span></span>
 				<span></span>
+				<i></i>
 			</span>
 		</button>
 	`;
@@ -166,7 +168,13 @@ function injectPagePrompt() {
 			width: ${PROMPT_ICON_WIDTH}px;
 			height: ${PROMPT_ICON_HEIGHT}px;
 			font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+			opacity: 0.5;
 			touch-action: none;
+			transition: opacity 140ms ease;
+		}
+		#${PROMPT_ID}:hover,
+		#${PROMPT_ID}:focus-within {
+			opacity: 1;
 		}
 		#${PROMPT_ID}.ai-summariser-hidden {
 			display: none;
@@ -178,20 +186,18 @@ function injectPagePrompt() {
 			width: ${PROMPT_ICON_WIDTH}px;
 			height: ${PROMPT_ICON_HEIGHT}px;
 			padding: 0;
-			border: 1px solid rgba(255, 255, 255, 0.1);
+			border: 1px solid rgba(255, 255, 255, 0.32);
 			border-right: 0;
 			border-radius: 10px 0 0 10px;
-			background: rgba(17, 24, 39, 0.94);
-			box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+			background: linear-gradient(180deg, rgba(25, 32, 48, 0.98), rgba(12, 18, 31, 0.98));
+			box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32), inset 3px 0 0 #a78bfa;
 			cursor: grab;
 			font: inherit;
-			opacity: 0.98;
-			transition: opacity 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+			transition: transform 140ms ease, box-shadow 140ms ease;
 		}
 		#${PROMPT_ID} .ai-summariser-icon:hover {
-			opacity: 0.08;
-			transform: translateX(4px);
-			box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+			transform: translateX(0);
+			box-shadow: 0 12px 28px rgba(0, 0, 0, 0.36), inset 3px 0 0 #c4b5fd;
 		}
 		#${PROMPT_ID} .ai-summariser-icon:active {
 			cursor: grabbing;
@@ -199,11 +205,10 @@ function injectPagePrompt() {
 		}
 		#${PROMPT_ID} .ai-summariser-tooltip {
 			position: absolute;
-			right: calc(100% + 10px);
-			top: 50%;
-			transform: translateY(-50%);
+			right: 0;
+			bottom: calc(100% + 8px);
 			width: max-content;
-			max-width: 150px;
+			max-width: 140px;
 			padding: 6px 9px;
 			border-radius: 7px;
 			background: #ffffff;
@@ -217,8 +222,39 @@ function injectPagePrompt() {
 			pointer-events: none;
 			transition: opacity 140ms ease;
 		}
-		#${PROMPT_ID} .ai-summariser-icon:hover .ai-summariser-tooltip {
+		#${PROMPT_ID}:hover .ai-summariser-tooltip,
+		#${PROMPT_ID}:focus-within .ai-summariser-tooltip {
 			opacity: 1;
+		}
+		#${PROMPT_ID} .ai-summariser-close {
+			position: absolute;
+			right: ${PROMPT_ICON_WIDTH - 8}px;
+			top: -10px;
+			display: grid;
+			place-items: center;
+			width: 20px;
+			height: 20px;
+			padding: 0;
+			border: 1px solid rgba(255, 255, 255, 0.12);
+			border-radius: 999px;
+			background: linear-gradient(180deg, rgba(25, 32, 48, 0.98), rgba(12, 18, 31, 0.98));
+			color: #ffffff;
+			box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+			cursor: pointer;
+			font: inherit;
+			font-size: 13px;
+			line-height: 1;
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 140ms ease, transform 140ms ease;
+		}
+		#${PROMPT_ID}:hover .ai-summariser-close,
+		#${PROMPT_ID}:focus-within .ai-summariser-close {
+			opacity: 1;
+			pointer-events: auto;
+		}
+		#${PROMPT_ID} .ai-summariser-close:hover {
+			transform: scale(1.05);
 		}
 		#${PROMPT_ID} .ai-summariser-icon-face {
 			position: relative;
@@ -230,7 +266,8 @@ function injectPagePrompt() {
 			padding: 7px 5px;
 			border: 1px solid rgba(255, 255, 255, 0.38);
 			border-radius: 7px;
-			background: linear-gradient(135deg, #e7edf7 0%, #fff7fb 58%, #d8b6ff 100%);
+			background: linear-gradient(135deg, #ffffff 0%, #eef4ff 45%, #c084fc 100%);
+			box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.18), 0 0 14px rgba(192, 132, 252, 0.42);
 			animation: aiSummariserNudge 2.2s ease-in-out infinite;
 		}
 		#${PROMPT_ID} .ai-summariser-icon-face span {
@@ -239,6 +276,16 @@ function injectPagePrompt() {
 			height: 5px;
 			border-radius: 999px;
 			background: #111827;
+		}
+		#${PROMPT_ID} .ai-summariser-icon-face i {
+			position: absolute;
+			right: 3px;
+			bottom: 2px;
+			width: 7px;
+			height: 7px;
+			border-radius: 999px;
+			background: #7c3aed;
+			box-shadow: 0 0 10px rgba(124, 58, 237, 0.72);
 		}
 		@keyframes aiSummariserNudge {
 			0%, 100% {
@@ -250,8 +297,15 @@ function injectPagePrompt() {
 		}
 	`;
 
+	const closeButton = prompt.querySelector(".ai-summariser-close");
 	const iconButton = prompt.querySelector(".ai-summariser-icon");
 	let dragState = null;
+
+	closeButton.addEventListener("click", (event) => {
+		event.stopPropagation();
+		prompt.remove();
+		style.remove();
+	});
 
 	iconButton.addEventListener("pointerdown", (event) => {
 		dragState = {
