@@ -6,6 +6,7 @@ const PROMPT_EDGE_OFFSET = 0;
 const PROMPT_ICON_WIDTH = 34;
 const PROMPT_ICON_HEIGHT = 36;
 const PROMPT_HOVER_TOP_SPACE = 44;
+const PROMPT_TOTAL_HEIGHT = PROMPT_ICON_HEIGHT + PROMPT_HOVER_TOP_SPACE;
 
 function cleanText(value) {
 	return value.replace(/\s+/g, " ").trim();
@@ -115,7 +116,7 @@ function setPromptTop(top) {
 }
 
 function clampPromptTop(top) {
-	const maxTop = Math.max(PROMPT_HOVER_TOP_SPACE, window.innerHeight - PROMPT_ICON_HEIGHT - 16);
+	const maxTop = Math.max(PROMPT_HOVER_TOP_SPACE, window.innerHeight - PROMPT_TOTAL_HEIGHT - 16);
 	return Math.min(Math.max(PROMPT_HOVER_TOP_SPACE, Math.round(top)), maxTop);
 }
 
@@ -164,7 +165,7 @@ function injectPagePrompt() {
 			top: ${getPromptTop()}px;
 			z-index: 2147483647;
 			width: ${PROMPT_ICON_WIDTH}px;
-			height: ${PROMPT_ICON_HEIGHT + PROMPT_HOVER_TOP_SPACE}px;
+			height: ${PROMPT_TOTAL_HEIGHT}px;
 			font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 			opacity: 0.5;
 			touch-action: none;
