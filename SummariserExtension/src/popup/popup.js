@@ -39,7 +39,9 @@ settingsButton.addEventListener("click", () => chrome.runtime.openOptionsPage())
 sourceTypeSelect.addEventListener("change", syncSourcePanels);
 outputModeSelect.addEventListener("change", syncOutputControls);
 fileInput.addEventListener("change", handleFileSelected);
-clearHistoryButton.addEventListener("click", clearHistory);
+if (clearHistoryButton) {
+	clearHistoryButton.addEventListener("click", clearHistory);
+}
 
 async function initialisePopup() {
 	copyButton.disabled = true;
