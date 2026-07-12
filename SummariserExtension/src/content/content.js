@@ -2,7 +2,9 @@ const PROMPT_ID = "ai-summariser-page-prompt";
 const PROMPT_STORAGE_KEY = "aiSummariserPromptTop";
 const MIN_PROMPT_TEXT_LENGTH = 600;
 const PROMPT_REAPPEAR_DELAY_MS = 12000;
-const PROMPT_EDGE_OFFSET = 14;
+const PROMPT_EDGE_OFFSET = 0;
+const PROMPT_ICON_WIDTH = 38;
+const PROMPT_ICON_HEIGHT = 40;
 
 function cleanText(value) {
 	return value.replace(/\s+/g, " ").trim();
@@ -82,7 +84,7 @@ function getPageMetadata(text, type = "page") {
 }
 
 function getPromptTop() {
-	const fallbackTop = Math.max(PROMPT_EDGE_OFFSET, window.innerHeight - 72);
+	const fallbackTop = Math.max(16, Math.round(window.innerHeight * 0.55));
 	const savedTop = Number(window.localStorage.getItem(PROMPT_STORAGE_KEY));
 	return clampPromptTop(Number.isFinite(savedTop) ? savedTop : fallbackTop);
 }
@@ -100,8 +102,8 @@ function setPromptTop(top) {
 }
 
 function clampPromptTop(top) {
-	const maxTop = Math.max(PROMPT_EDGE_OFFSET, window.innerHeight - 46 - PROMPT_EDGE_OFFSET);
-	return Math.min(Math.max(PROMPT_EDGE_OFFSET, Math.round(top)), maxTop);
+	const maxTop = Math.max(16, window.innerHeight - PROMPT_ICON_HEIGHT - 16);
+	return Math.min(Math.max(16, Math.round(top)), maxTop);
 }
 
 function openSummariserPopup(prompt, text) {
@@ -132,9 +134,12 @@ function injectPagePrompt() {
 	const prompt = document.createElement("aside");
 	prompt.id = PROMPT_ID;
 	prompt.innerHTML = `
-		<button class="ai-summariser-icon" type="button" aria-label="Open AI Summariser for this page" title="Summarise this page">
-			<span class="ai-summariser-icon-mark">AI</span>
-			<span class="ai-summariser-icon-pulse"></span>
+		<button class="ai-summariser-icon" type="button" aria-label="Open AI Summariser for this page">
+			<span class="ai-summariser-tooltip">Open summariser</span>
+			<span class="ai-summariser-icon-face" aria-hidden="true">
+				<span></span>
+				<span></span>
+			</span>
 		</button>
 	`;
 
@@ -145,8 +150,8 @@ function injectPagePrompt() {
 			right: ${PROMPT_EDGE_OFFSET}px;
 			top: ${getPromptTop()}px;
 			z-index: 2147483647;
-			width: 46px;
-			height: 46px;
+			width: ${PROMPT_ICON_WIDTH}px;
+			height: ${PROMPT_ICON_HEIGHT}px;
 			font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 			touch-action: none;
 		}
@@ -157,48 +162,77 @@ function injectPagePrompt() {
 			position: relative;
 			display: grid;
 			place-items: center;
-			width: 46px;
-			height: 46px;
-			border: 1px solid #b8e4df;
-			border-radius: 999px;
-			background: #0f766e;
-			color: #ffffff;
-			box-shadow: 0 12px 30px rgba(20, 33, 61, 0.24);
+			width: ${PROMPT_ICON_WIDTH}px;
+			height: ${PROMPT_ICON_HEIGHT}px;
+			padding: 0;
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			border-right: 0;
+			border-radius: 10px 0 0 10px;
+			background: rgba(17, 24, 39, 0.94);
+			box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
 			cursor: grab;
 			font: inherit;
-			font-size: 12px;
-			font-weight: 900;
-			letter-spacing: 0;
-			opacity: 0.92;
-			transition: opacity 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+			opacity: 0.98;
+			transition: opacity 140ms ease, transform 140ms ease, box-shadow 140ms ease;
 		}
 		#${PROMPT_ID} .ai-summariser-icon:hover {
-			opacity: 0;
-			transform: translateX(6px) scale(0.94);
-			box-shadow: 0 8px 18px rgba(20, 33, 61, 0.18);
+			opacity: 0.08;
+			transform: translateX(4px);
+			box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
 		}
 		#${PROMPT_ID} .ai-summariser-icon:active {
 			cursor: grabbing;
+			opacity: 0.7;
 		}
-		#${PROMPT_ID} .ai-summariser-icon-mark {
-			position: relative;
-			z-index: 2;
-		}
-		#${PROMPT_ID} .ai-summariser-icon-pulse {
+		#${PROMPT_ID} .ai-summariser-tooltip {
 			position: absolute;
-			inset: -5px;
-			border: 2px solid rgba(15, 118, 110, 0.32);
-			border-radius: 999px;
-			animation: aiSummariserPulse 1.8s ease-out infinite;
+			right: calc(100% + 10px);
+			top: 50%;
+			transform: translateY(-50%);
+			width: max-content;
+			max-width: 150px;
+			padding: 6px 9px;
+			border-radius: 7px;
+			background: #ffffff;
+			color: #14213d;
+			box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+			font-size: 12px;
+			font-weight: 700;
+			letter-spacing: 0;
+			line-height: 1.2;
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 140ms ease;
 		}
-		@keyframes aiSummariserPulse {
-			0% {
-				opacity: 0.75;
-				transform: scale(0.86);
+		#${PROMPT_ID} .ai-summariser-icon:hover .ai-summariser-tooltip {
+			opacity: 1;
+		}
+		#${PROMPT_ID} .ai-summariser-icon-face {
+			position: relative;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 5px;
+			width: 22px;
+			height: 22px;
+			padding: 7px 5px;
+			border: 1px solid rgba(255, 255, 255, 0.38);
+			border-radius: 7px;
+			background: linear-gradient(135deg, #e7edf7 0%, #fff7fb 58%, #d8b6ff 100%);
+			animation: aiSummariserNudge 2.2s ease-in-out infinite;
+		}
+		#${PROMPT_ID} .ai-summariser-icon-face span {
+			display: block;
+			width: 5px;
+			height: 5px;
+			border-radius: 999px;
+			background: #111827;
+		}
+		@keyframes aiSummariserNudge {
+			0%, 100% {
+				transform: translateY(0);
 			}
-			100% {
-				opacity: 0;
-				transform: scale(1.45);
+			50% {
+				transform: translateY(-2px);
 			}
 		}
 	`;
@@ -212,6 +246,7 @@ function injectPagePrompt() {
 			startTop: prompt.offsetTop,
 			moved: false,
 		};
+		event.preventDefault();
 		iconButton.setPointerCapture(event.pointerId);
 	});
 
@@ -225,6 +260,7 @@ function injectPagePrompt() {
 			dragState.moved = true;
 		}
 
+		event.preventDefault();
 		setPromptTop(dragState.startTop + deltaY);
 	});
 
