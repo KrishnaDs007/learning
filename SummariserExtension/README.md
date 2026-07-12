@@ -17,6 +17,8 @@ It supports summarising the full page content, selected text, pasted text, and u
 - Extract links only from page or text sources.
 - Copy generated summaries to the clipboard.
 - Use a cleaner popup with source status, loading, success, and error states.
+- Use a compact draggable on-page icon that stays on the right edge and reappears after the popup closes.
+- Store and restore recent summary/link outputs from local history.
 - Store provider API keys in Chrome extension storage.
 - Get provider-specific API key steps directly from the settings page.
 - Close the settings window manually or let it auto-close after saving.
@@ -96,7 +98,8 @@ This is an early working version. The core extension flow is in place, and the f
 - Added provider-specific API key setup steps inside the settings modal.
 - Added a settings close button and cancelable auto-close after provider saves.
 - Added auto-hiding success messages in settings.
-- Added a dismissible on-page summarisation prompt.
+- Added local recent-output history with restore and clear controls.
+- Replaced the on-page prompt with a compact draggable right-edge icon.
 - Reorganized files into `src/` and `assets/`.
 - Added generated icon assets for Chrome extension sizes.
 - Added project documentation.

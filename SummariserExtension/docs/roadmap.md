@@ -40,10 +40,11 @@ Goal: make the extension feel polished and useful every day.
   - Done: first support text-based files such as `.txt`, `.md`, `.csv`, `.json`, and `.html`.
   - Plan PDF and DOC/DOCX support carefully because they need real parsing or provider file-upload support.
 - Done: add a small on-page summarisation prompt with a close button.
+- Done: convert the on-page summarisation prompt into a compact draggable right-edge icon.
 - Done: add an "extract links only" mode for page, selected text, pasted text, or uploaded source content.
 - Done: add visible loading, copied, and empty-content/error states.
 - Done: show source metadata when available: page title/domain and estimated word count.
-- Add recent summaries/history with a user-controlled clear option.
+- Done: add recent summaries/history with a user-controlled clear option.
 
 ## Phase 3.5 - Multi-provider model support
 
@@ -106,6 +107,5 @@ Goal: differentiate the extension.
 
 1. Revisit PDF/DOC/DOCX support with the chosen parsing strategy.
 2. Improve extraction quality and long-document handling with chunking.
-3. Add summary history with a clear-history control.
-4. Tighten provider error messages and direct-browser API limitations.
-5. Add final Chrome Web Store copy, screenshots, and permission explanations.
+3. Tighten provider error messages and direct-browser API limitations.
+4. Add final Chrome Web Store copy, screenshots, and permission explanations.

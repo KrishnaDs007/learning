@@ -28,6 +28,8 @@ Planned provider options include:
 
 The extension should use user-provided API keys. Keys are stored in Chrome extension storage.
 
+Recent summary history is stored locally in Chrome storage and can be cleared from the popup. Because summaries can contain private page content, this history should stay local-only unless the user explicitly opts into sync in a future version.
+
 Before public release, decide whether to:
 
 - Keep bring-your-own-key storage inside the extension.
@@ -41,6 +43,6 @@ Planned controls:
 - Select active provider.
 - Add, edit, or remove API keys.
 - Choose input source.
-- Close the on-page summarisation prompt.
-- Clear local history if summary history is added.
+- Move the on-page summariser icon vertically or open the popup from it.
+- Clear local summary and links history.
 

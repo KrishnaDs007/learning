@@ -1,5 +1,8 @@
 const PROMPT_ID = "ai-summariser-page-prompt";
+const PROMPT_STORAGE_KEY = "aiSummariserPromptTop";
 const MIN_PROMPT_TEXT_LENGTH = 600;
+const PROMPT_REAPPEAR_DELAY_MS = 12000;
+const PROMPT_EDGE_OFFSET = 14;
 
 function cleanText(value) {
 	return value.replace(/\s+/g, " ").trim();
@@ -78,6 +81,44 @@ function getPageMetadata(text, type = "page") {
 	};
 }
 
+function getPromptTop() {
+	const fallbackTop = Math.max(PROMPT_EDGE_OFFSET, window.innerHeight - 72);
+	const savedTop = Number(window.localStorage.getItem(PROMPT_STORAGE_KEY));
+	return clampPromptTop(Number.isFinite(savedTop) ? savedTop : fallbackTop);
+}
+
+function setPromptTop(top) {
+	const prompt = document.getElementById(PROMPT_ID);
+	if (!prompt) {
+		return;
+	}
+
+	const nextTop = clampPromptTop(top);
+	prompt.style.top = `${nextTop}px`;
+	prompt.style.right = `${PROMPT_EDGE_OFFSET}px`;
+	window.localStorage.setItem(PROMPT_STORAGE_KEY, String(nextTop));
+}
+
+function clampPromptTop(top) {
+	const maxTop = Math.max(PROMPT_EDGE_OFFSET, window.innerHeight - 46 - PROMPT_EDGE_OFFSET);
+	return Math.min(Math.max(PROMPT_EDGE_OFFSET, Math.round(top)), maxTop);
+}
+
+function openSummariserPopup(prompt, text) {
+	prompt.classList.add("ai-summariser-hidden");
+	chrome.runtime.sendMessage({
+		type: "OPEN_POPUP_WITH_TEXT",
+		text,
+		source: getPageMetadata(text),
+	}, () => {
+		window.setTimeout(() => {
+			if (document.documentElement.contains(prompt)) {
+				prompt.classList.remove("ai-summariser-hidden");
+			}
+		}, PROMPT_REAPPEAR_DELAY_MS);
+	});
+}
+
 function injectPagePrompt() {
 	if (document.getElementById(PROMPT_ID) || window.top !== window) {
 		return;
@@ -91,88 +132,136 @@ function injectPagePrompt() {
 	const prompt = document.createElement("aside");
 	prompt.id = PROMPT_ID;
 	prompt.innerHTML = `
-		<div class="ai-summariser-card">
-			<button class="ai-summariser-close" type="button" aria-label="Close summariser prompt">x</button>
-			<strong>Summarise this page?</strong>
-			<span>${getPageMetadata(text).wordCount} words detected</span>
-			<button class="ai-summariser-action" type="button">Open summariser</button>
-		</div>
+		<button class="ai-summariser-icon" type="button" aria-label="Open AI Summariser for this page" title="Summarise this page">
+			<span class="ai-summariser-icon-mark">AI</span>
+			<span class="ai-summariser-icon-pulse"></span>
+		</button>
 	`;
 
 	const style = document.createElement("style");
 	style.textContent = `
 		#${PROMPT_ID} {
 			position: fixed;
-			right: 18px;
-			bottom: 18px;
+			right: ${PROMPT_EDGE_OFFSET}px;
+			top: ${getPromptTop()}px;
 			z-index: 2147483647;
+			width: 46px;
+			height: 46px;
 			font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+			touch-action: none;
 		}
-		#${PROMPT_ID} .ai-summariser-card {
+		#${PROMPT_ID}.ai-summariser-hidden {
+			display: none;
+		}
+		#${PROMPT_ID} .ai-summariser-icon {
 			position: relative;
 			display: grid;
-			gap: 6px;
-			width: 230px;
-			padding: 14px;
+			place-items: center;
+			width: 46px;
+			height: 46px;
 			border: 1px solid #b8e4df;
-			border-radius: 8px;
-			background: #ffffff;
-			color: #14213d;
-			box-shadow: 0 16px 38px rgba(20, 33, 61, 0.18);
-		}
-		#${PROMPT_ID} strong {
-			font-size: 14px;
-			line-height: 1.2;
-		}
-		#${PROMPT_ID} span {
-			color: #5c667a;
-			font-size: 12px;
-		}
-		#${PROMPT_ID} button {
-			font: inherit;
-		}
-		#${PROMPT_ID} .ai-summariser-close {
-			position: absolute;
-			top: 6px;
-			right: 6px;
-			width: 24px;
-			height: 24px;
-			border: 0;
 			border-radius: 999px;
-			background: transparent;
-			color: #5c667a;
-			cursor: pointer;
-		}
-		#${PROMPT_ID} .ai-summariser-action {
-			min-height: 34px;
-			margin-top: 4px;
-			border: 0;
-			border-radius: 8px;
 			background: #0f766e;
 			color: #ffffff;
-			font-weight: 800;
-			cursor: pointer;
+			box-shadow: 0 12px 30px rgba(20, 33, 61, 0.24);
+			cursor: grab;
+			font: inherit;
+			font-size: 12px;
+			font-weight: 900;
+			letter-spacing: 0;
+			opacity: 0.92;
+			transition: opacity 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+		}
+		#${PROMPT_ID} .ai-summariser-icon:hover {
+			opacity: 0;
+			transform: translateX(6px) scale(0.94);
+			box-shadow: 0 8px 18px rgba(20, 33, 61, 0.18);
+		}
+		#${PROMPT_ID} .ai-summariser-icon:active {
+			cursor: grabbing;
+		}
+		#${PROMPT_ID} .ai-summariser-icon-mark {
+			position: relative;
+			z-index: 2;
+		}
+		#${PROMPT_ID} .ai-summariser-icon-pulse {
+			position: absolute;
+			inset: -5px;
+			border: 2px solid rgba(15, 118, 110, 0.32);
+			border-radius: 999px;
+			animation: aiSummariserPulse 1.8s ease-out infinite;
+		}
+		@keyframes aiSummariserPulse {
+			0% {
+				opacity: 0.75;
+				transform: scale(0.86);
+			}
+			100% {
+				opacity: 0;
+				transform: scale(1.45);
+			}
 		}
 	`;
 
-	prompt.querySelector(".ai-summariser-close").addEventListener("click", () => {
-		prompt.remove();
-		style.remove();
+	const iconButton = prompt.querySelector(".ai-summariser-icon");
+	let dragState = null;
+
+	iconButton.addEventListener("pointerdown", (event) => {
+		dragState = {
+			startY: event.clientY,
+			startTop: prompt.offsetTop,
+			moved: false,
+		};
+		iconButton.setPointerCapture(event.pointerId);
 	});
 
-	prompt.querySelector(".ai-summariser-action").addEventListener("click", () => {
-		chrome.runtime.sendMessage({
-			type: "OPEN_POPUP_WITH_TEXT",
-			text,
-			source: getPageMetadata(text),
-		});
+	iconButton.addEventListener("pointermove", (event) => {
+		if (!dragState) {
+			return;
+		}
+
+		const deltaY = event.clientY - dragState.startY;
+		if (Math.abs(deltaY) > 3) {
+			dragState.moved = true;
+		}
+
+		setPromptTop(dragState.startTop + deltaY);
 	});
+
+	iconButton.addEventListener("pointerup", (event) => {
+		if (!dragState) {
+			return;
+		}
+
+		iconButton.releasePointerCapture(event.pointerId);
+		const wasDragged = dragState.moved;
+		dragState = null;
+
+		if (!wasDragged) {
+			openSummariserPopup(prompt, text);
+		}
+	});
+
+	iconButton.addEventListener("pointercancel", () => {
+		dragState = null;
+	});
+
+	window.addEventListener("resize", () => setPromptTop(prompt.offsetTop));
 
 	document.documentElement.appendChild(style);
 	document.documentElement.appendChild(prompt);
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.type === "SUMMARISER_POPUP_CLOSED") {
+		const prompt = document.getElementById(PROMPT_ID);
+		if (prompt) {
+			prompt.classList.remove("ai-summariser-hidden");
+		}
+		sendResponse({ shown: Boolean(prompt) });
+		return;
+	}
+
 	if (request.type === "GET_ARTICLE_TEXT") {
 		const text = getArticleText();
 		sendResponse({

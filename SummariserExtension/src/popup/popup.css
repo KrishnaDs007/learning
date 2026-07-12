@@ -220,8 +220,8 @@ textarea:focus {
 
 .result {
 	flex: 1;
-	min-height: 230px;
-	max-height: 320px;
+	min-height: 210px;
+	max-height: 285px;
 	padding: 16px;
 	border: 1px solid var(--border);
 	border-radius: 8px;
@@ -263,6 +263,81 @@ textarea:focus {
 	border-top-color: var(--primary);
 	border-radius: 50%;
 	animation: spin 0.9s linear infinite;
+}
+
+.history-panel {
+	display: grid;
+	gap: 8px;
+	padding: 12px;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--panel);
+}
+
+.history-panel.hidden {
+	display: none;
+}
+
+.history-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.history-header h2 {
+	margin: 0;
+	font-size: 14px;
+	letter-spacing: 0;
+}
+
+.history-list {
+	display: grid;
+	gap: 6px;
+	max-height: 116px;
+	overflow-y: auto;
+}
+
+.history-item {
+	display: grid;
+	gap: 3px;
+	width: 100%;
+	padding: 8px 10px;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: #fbfcff;
+	color: var(--text);
+	text-align: left;
+	cursor: pointer;
+}
+
+.history-item:hover {
+	border-color: var(--primary);
+}
+
+.history-item strong {
+	overflow: hidden;
+	font-size: 12px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.history-item span {
+	color: var(--muted);
+	font-size: 11px;
+}
+
+.link-button {
+	min-height: 28px;
+	border: 0;
+	background: transparent;
+	color: var(--primary);
+	font-weight: 800;
+	cursor: pointer;
+}
+
+.link-button:hover {
+	color: var(--primary-strong);
 }
 
 .actions {

@@ -1,10 +1,13 @@
 const MIN_TEXT_LENGTH = 40;
+const HISTORY_STORAGE_KEY = "summaryHistory";
+const MAX_HISTORY_ITEMS = 5;
 const SUPPORTED_TEXT_FILE_EXTENSIONS = [".txt", ".md", ".csv", ".json", ".html", ".htm"];
 
 const state = {
 	lastOutput: "",
 	source: null,
 	profiles: [],
+	history: [],
 	uploadedFile: null,
 };
 
@@ -24,19 +27,26 @@ const pasteInput = document.getElementById("paste-input");
 const uploadPanel = document.getElementById("upload-panel");
 const fileInput = document.getElementById("file-input");
 const fileLabel = document.getElementById("file-label");
+const historyPanel = document.getElementById("history-panel");
+const historyList = document.getElementById("history-list");
+const clearHistoryButton = document.getElementById("clear-history-btn");
 
 document.addEventListener("DOMContentLoaded", initialisePopup);
+window.addEventListener("unload", notifyPopupClosed);
 summariseButton.addEventListener("click", handleRun);
 copyButton.addEventListener("click", copyOutput);
 settingsButton.addEventListener("click", () => chrome.runtime.openOptionsPage());
 sourceTypeSelect.addEventListener("change", syncSourcePanels);
 outputModeSelect.addEventListener("change", syncOutputControls);
 fileInput.addEventListener("change", handleFileSelected);
+clearHistoryButton.addEventListener("click", clearHistory);
 
 async function initialisePopup() {
 	copyButton.disabled = true;
 	chrome.action.setBadgeText({ text: "" });
 	await loadProviders();
+	await loadHistory();
+	renderHistory();
 	syncSourcePanels();
 	syncOutputControls();
 
@@ -68,7 +78,7 @@ async function loadProviders() {
 		const config = ProviderRegistry.getProviderConfig(profile.type);
 		const option = document.createElement("option");
 		option.value = profile.id;
-		option.textContent = `${profile.name || config.label} · ${profile.model}`;
+		option.textContent = `${profile.name || config.label} - ${profile.model}`;
 		option.selected = profile.isDefault;
 		providerSelect.appendChild(option);
 	}
@@ -90,7 +100,7 @@ function syncOutputControls() {
 function handleFileSelected() {
 	const file = fileInput.files && fileInput.files[0];
 	state.uploadedFile = file || null;
-	fileLabel.textContent = file ? `${file.name} · ${formatBytes(file.size)}` : "No file selected";
+	fileLabel.textContent = file ? `${file.name} - ${formatBytes(file.size)}` : "No file selected";
 }
 
 async function handleRun() {
@@ -125,6 +135,12 @@ async function handleRun() {
 		result.textContent = summary;
 		copyButton.disabled = false;
 		setStatus(getSuccessMessage(source.text, profile));
+			await saveHistoryItem({
+			mode: "summary",
+			output: summary,
+			source: source.source,
+			providerName: profile.name,
+		});
 	} catch (error) {
 		setError(error.message || "Could not complete this request.");
 	}
@@ -290,6 +306,84 @@ function hasExtractedText(response) {
 	return Boolean(text && text.trim().length >= MIN_TEXT_LENGTH);
 }
 
+function loadHistory() {
+	return new Promise((resolve) => {
+		chrome.storage.local.get([HISTORY_STORAGE_KEY], (stored) => {
+			state.history = Array.isArray(stored[HISTORY_STORAGE_KEY]) ? stored[HISTORY_STORAGE_KEY] : [];
+			resolve();
+		});
+	});
+}
+
+function saveHistoryItem(item) {
+	const historyItem = {
+		id: `history-${Date.now()}`,
+		mode: item.mode,
+		output: item.output,
+		sourceTitle: getHistorySourceTitle(item.source),
+		providerName: item.providerName || "Provider",
+		createdAt: Date.now(),
+	};
+
+	state.history = [historyItem, ...state.history].slice(0, MAX_HISTORY_ITEMS);
+	renderHistory();
+	return new Promise((resolve) => {
+		chrome.storage.local.set({ [HISTORY_STORAGE_KEY]: state.history }, resolve);
+	});
+}
+
+function renderHistory() {
+	historyPanel.classList.toggle("hidden", state.history.length === 0);
+	historyList.innerHTML = "";
+
+	for (const item of state.history) {
+		const button = document.createElement("button");
+		button.className = "history-item";
+		button.type = "button";
+		button.innerHTML = `
+			<strong>${escapeHtml(item.sourceTitle)}</strong>
+			<span>${escapeHtml(getHistoryMeta(item))}</span>
+		`;
+		button.addEventListener("click", () => restoreHistoryItem(item));
+		historyList.appendChild(button);
+	}
+}
+
+function restoreHistoryItem(item) {
+	state.lastOutput = item.output;
+	result.textContent = item.output;
+	copyButton.disabled = false;
+	setStatus(`Restored ${item.mode === "links" ? "links" : "summary"} from recent history.`);
+}
+
+function clearHistory() {
+	state.history = [];
+	renderHistory();
+	chrome.storage.local.remove(HISTORY_STORAGE_KEY);
+	setStatus("Recent history cleared.");
+}
+
+function getHistorySourceTitle(source) {
+	if (!source) {
+		return "Previous output";
+	}
+
+	if (source.type === "page") {
+		return source.domain || source.title || "Page summary";
+	}
+
+	return source.title || source.type || "Previous output";
+}
+
+function getHistoryMeta(item) {
+	const date = new Date(item.createdAt).toLocaleString([], {
+		month: "short",
+		day: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+	});
+	return `${item.mode === "links" ? "Links" : "Summary"} - ${item.providerName} - ${date}`;
+}
 function renderLinks(links) {
 	const uniqueLinks = dedupeLinks(links);
 	if (uniqueLinks.length === 0) {
@@ -306,6 +400,12 @@ function renderLinks(links) {
 	result.textContent = state.lastOutput;
 	copyButton.disabled = false;
 	setStatus(`${uniqueLinks.length} link${uniqueLinks.length === 1 ? "" : "s"} extracted.`);
+	saveHistoryItem({
+		mode: "links",
+		output: state.lastOutput,
+		source: state.source,
+		providerName: "Links only",
+	});
 }
 
 function extractLinksFromText(text) {
@@ -345,6 +445,19 @@ async function copyOutput() {
 	} catch (error) {
 		setError("Could not copy the output. Select the text and copy it manually.");
 	}
+}
+
+function notifyPopupClosed() {
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		const tabId = tabs && tabs[0] && tabs[0].id;
+		if (!tabId) {
+			return;
+		}
+
+		chrome.tabs.sendMessage(tabId, { type: "SUMMARISER_POPUP_CLOSED" }, () => {
+			void chrome.runtime.lastError;
+		});
+	});
 }
 
 function setLoading(message) {
