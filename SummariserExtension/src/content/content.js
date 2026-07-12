@@ -85,7 +85,14 @@ function getPageMetadata(text, type = "page") {
 
 function getPromptTop() {
 	const fallbackTop = Math.max(16, Math.round(window.innerHeight * 0.55));
-	const savedTop = Number(window.localStorage.getItem(PROMPT_STORAGE_KEY));
+	let savedTop = Number.NaN;
+
+	try {
+		savedTop = Number(window.localStorage.getItem(PROMPT_STORAGE_KEY));
+	} catch (error) {
+		savedTop = Number.NaN;
+	}
+
 	return clampPromptTop(Number.isFinite(savedTop) ? savedTop : fallbackTop);
 }
 
@@ -98,7 +105,12 @@ function setPromptTop(top) {
 	const nextTop = clampPromptTop(top);
 	prompt.style.top = `${nextTop}px`;
 	prompt.style.right = `${PROMPT_EDGE_OFFSET}px`;
-	window.localStorage.setItem(PROMPT_STORAGE_KEY, String(nextTop));
+
+	try {
+		window.localStorage.setItem(PROMPT_STORAGE_KEY, String(nextTop));
+	} catch (error) {
+		// Some privacy-restricted pages block localStorage; dragging should still work for the current page.
+	}
 }
 
 function clampPromptTop(top) {
@@ -113,6 +125,7 @@ function openSummariserPopup(prompt, text) {
 		text,
 		source: getPageMetadata(text),
 	}, () => {
+		void chrome.runtime.lastError;
 		window.setTimeout(() => {
 			if (document.documentElement.contains(prompt)) {
 				prompt.classList.remove("ai-summariser-hidden");
@@ -269,7 +282,9 @@ function injectPagePrompt() {
 			return;
 		}
 
-		iconButton.releasePointerCapture(event.pointerId);
+		if (iconButton.hasPointerCapture(event.pointerId)) {
+			iconButton.releasePointerCapture(event.pointerId);
+		}
 		const wasDragged = dragState.moved;
 		dragState = null;
 
