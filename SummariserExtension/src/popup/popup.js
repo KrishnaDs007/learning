@@ -133,8 +133,9 @@ async function handleRun() {
 		state.lastOutput = summary;
 		result.textContent = summary;
 		copyButton.disabled = false;
+		bringResultIntoView();
 		setStatus(getSuccessMessage(source.text, profile));
-			await saveHistoryItem({
+		await saveHistoryItem({
 			mode: "summary",
 			output: summary,
 			source: source.source,
@@ -307,6 +308,7 @@ function restoreHistoryItem(item) {
 	state.lastOutput = item.output;
 	result.textContent = item.output;
 	copyButton.disabled = false;
+	bringResultIntoView();
 	setStatus(`Restored ${item.mode === "links" ? "links" : "summary"} from recent history.`);
 }
 
@@ -331,6 +333,7 @@ function renderLinks(links) {
 	}).join("\n");
 	result.textContent = state.lastOutput;
 	copyButton.disabled = false;
+	bringResultIntoView();
 	setStatus(`${uniqueLinks.length} link${uniqueLinks.length === 1 ? "" : "s"} extracted.`);
 	saveHistoryItem({
 		mode: "links",
@@ -403,6 +406,7 @@ function setLoading(message) {
 			<span>${escapeHtml(message)}</span>
 		</div>
 	`;
+	bringResultIntoView();
 }
 
 function setStatus(message) {
@@ -422,6 +426,13 @@ function setError(message) {
 			<span>${escapeHtml(message)}</span>
 		</div>
 	`;
+	bringResultIntoView();
+}
+
+function bringResultIntoView() {
+	requestAnimationFrame(() => {
+		result.scrollIntoView({ block: "nearest", behavior: "smooth" });
+	});
 }
 
 function setSourceLabel(source) {
