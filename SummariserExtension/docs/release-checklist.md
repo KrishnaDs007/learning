@@ -42,6 +42,7 @@
 
 ## Chrome Web Store Assets
 
+- Done: prepare upload package at `dist/ai-summariser-v1.0.0.zip`.
 - Done: extension icon sizes: 16, 32, 48, 128.
 - Done: draft short description.
 - Done: draft detailed description.
