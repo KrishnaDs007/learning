@@ -39,11 +39,16 @@ Use:
 
 ### Screenshots
 
-Status: still needs capture from the loaded extension.
+Status: partially captured.
 
 Capture guide:
 
 - `docs/store-screenshot-guide.md`
+
+Ready screenshots:
+
+- `assets/store/screenshots/popup-summary-1280x800.png`
+- `assets/store/screenshots/provider-settings-1280x800.png`
 
 Chrome accepts screenshots at:
 
@@ -52,13 +57,11 @@ Chrome accepts screenshots at:
 
 Screenshots should be full bleed with square corners and no padding.
 
-Recommended screenshot set:
+Remaining recommended screenshot set:
 
-1. Popup summarising a readable article page.
-2. Popup using pasted text or uploaded file mode.
-3. Provider settings page with saved provider cards and API key setup guidance.
-4. On-page draggable right-edge icon on a webpage.
-5. Links-only extraction output.
+1. Popup using pasted text or uploaded file mode.
+2. On-page draggable right-edge icon on a webpage.
+3. Links-only extraction output.
 
 Capture notes:
 
@@ -110,8 +113,9 @@ Included there:
 ## Pre-upload Asset Checklist
 
 - Confirm `assets/icons/icon-128.png` looks good on light and dark backgrounds.
-- Capture at least one 1280x800 screenshot.
-- Prefer capturing all five recommended screenshots.
+- Done: capture popup summary screenshot.
+- Done: capture provider settings screenshot.
+- Capture remaining upload/paste, page icon, and links-only screenshots.
 - Done: create the 440x280 small promotional image.
 - Review all screenshots for hidden API keys or private content.
 - Add final support contact details in the listing copy.

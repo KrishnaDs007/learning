@@ -91,7 +91,7 @@ Goal: prepare for public use or a polished personal release.
 - Done: draft Chrome Web Store short description, detailed description, privacy practices text, support wording, and permission explanations.
 - Done: confirm Chrome-required icon sizes are present in `assets/icons/`.
 - Done: add a Chrome Web Store 440x280 small promotional image.
-- Add Chrome Web Store screenshots captured from the loaded extension.
+- Partially done: add Chrome Web Store screenshots captured from the loaded extension. Popup summary and provider settings screenshots are ready; upload/paste, on-page icon, and links-only screenshots remain.
 - Decide whether direct browser API-key usage is acceptable or whether a backend proxy is needed.
 - Done: add `docs/release-checklist.md`.
 - Done: add `docs/privacy.md`.
@@ -112,6 +112,6 @@ Goal: differentiate the extension.
 
 1. Done: tighten provider error messages and direct-browser API limitations.
 2. Done: add final Chrome Web Store copy and permission explanations.
-3. Capture Chrome Web Store screenshots from the loaded extension.
+3. Continue Chrome Web Store screenshots: upload/paste, on-page icon, and links-only output.
 4. Done: add prompt templates for different content types.
 5. Done: add safety handling for blocked pages, direct PDF tabs, Chrome internal pages, Chrome Web Store pages, and pages where content scripts cannot run.

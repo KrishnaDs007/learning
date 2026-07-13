@@ -11,9 +11,9 @@ Use this guide to capture the remaining Store screenshots from a real loaded ext
 
 ## Recommended Screenshot Set
 
-1. Popup on a normal webpage with a completed page summary.
+1. Done: popup on a normal webpage with a completed page summary: `assets/store/screenshots/popup-summary-1280x800.png`.
 2. Popup in pasted-text or upload-file mode.
-3. Provider settings page with saved provider cards and API key setup guidance.
+3. Done: provider settings page with saved provider cards and API key setup guidance: `assets/store/screenshots/provider-settings-1280x800.png`.
 4. Draggable right-edge page icon on a readable webpage.
 5. Links-only output in the popup.
 
@@ -42,4 +42,3 @@ Use this guide to capture the remaining Store screenshots from a real loaded ext
 - The UI shown matches the current extension.
 - The screenshot communicates one feature clearly.
 - The image dimensions match Chrome Web Store requirements.
-

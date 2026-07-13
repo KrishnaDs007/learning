@@ -47,7 +47,12 @@
 - Done: draft detailed description.
 - Done: draft privacy practices text.
 - Done: draft support/contact wording.
-- Store screenshots.
+- Store screenshots:
+  - Done: popup summary screenshot.
+  - Done: provider settings screenshot.
+  - Remaining: upload/paste screenshot.
+  - Remaining: on-page icon screenshot.
+  - Remaining: links-only screenshot.
 - Done: small promotional image.
 - Add final public support contact/link before publishing.
 
