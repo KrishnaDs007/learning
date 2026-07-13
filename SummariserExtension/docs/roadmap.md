@@ -38,7 +38,8 @@ Goal: make the extension feel polished and useful every day.
 - Done: add a paste-text input mode so users can paste any text and summarise it directly.
 - Add an upload input mode for documents:
   - Done: first support text-based files such as `.txt`, `.md`, `.csv`, `.json`, and `.html`.
-  - Plan PDF and DOC/DOCX support carefully because they need real parsing or provider file-upload support.
+  - Done: add browser-side PDF extraction for text-based PDFs.
+  - Done: add DOCX extraction and best-effort legacy DOC text recovery.
 - Done: add a small on-page summarisation prompt with a close button.
 - Done: convert the on-page summarisation prompt into a compact draggable right-edge icon.
 - Done: add an "extract links only" mode for page, selected text, pasted text, or uploaded source content.
@@ -70,9 +71,9 @@ Goal: let users use whichever AI provider and API key they already have.
 
 Goal: produce better summaries from real webpages.
 
-- Improve extraction by removing repeated navigation text and filtering tiny paragraphs.
-- Support selected text first, article body second, full-page fallback last.
-- Increase input handling beyond 2,000 characters with chunking or smarter trimming.
+- Done: improve extraction by removing repeated navigation text and filtering tiny paragraphs.
+- Done: support selected text first, article body second, full-page fallback last.
+- Done: increase input handling with chunked representative long-document prompts.
 - Add prompt templates for different content types: article, documentation, tutorial, product page, forum thread.
 - Add safety handling for blocked pages, PDFs, Chrome internal pages, and pages where content scripts cannot run.
 
@@ -105,7 +106,7 @@ Goal: differentiate the extension.
 
 ## Proposed next implementation order
 
-1. Revisit PDF/DOC/DOCX support with the chosen parsing strategy.
-2. Improve extraction quality and long-document handling with chunking.
-3. Tighten provider error messages and direct-browser API limitations.
-4. Add final Chrome Web Store copy, screenshots, and permission explanations.
+1. Tighten provider error messages and direct-browser API limitations.
+2. Add final Chrome Web Store copy, screenshots, and permission explanations.
+3. Add prompt templates for different content types.
+4. Add safety handling for blocked pages, PDFs, Chrome internal pages, and pages where content scripts cannot run.

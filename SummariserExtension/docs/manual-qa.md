@@ -42,3 +42,5 @@ Use this checklist after loading the unpacked extension from this project folder
 - Run on `chrome://extensions` or another restricted page and confirm the popup shows a readable access error.
 - Try summarising with no saved provider and confirm settings opens.
 - Upload an unsupported file type and confirm the unsupported-file message is clear.
+- Try an empty file and confirm the popup shows an empty-file message.
+- Try a renamed or corrupt PDF/DOCX file and confirm the popup shows a readable bad-file message.

@@ -9,7 +9,7 @@ The extension may process:
 - Text extracted from the active webpage.
 - Text selected by the user.
 - Text pasted into the popup.
-- Text extracted from supported uploaded files.
+- Text extracted from supported uploaded files, including text-based PDFs and Word documents.
 - Links extracted from page or text sources.
 
 ## Data Sent To AI Providers

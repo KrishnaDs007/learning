@@ -13,7 +13,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 - Control summary length with short, medium, and long options.
 - Summarise selected text from the right-click context menu.
 - Paste text directly into the popup.
-- Upload text-based files such as `.txt`, `.md`, `.csv`, `.json`, and `.html`.
+- Upload `.txt`, `.md`, `.csv`, `.json`, `.html`, text-based `.pdf`, `.docx`, and best-effort legacy `.doc` files.
 - Extract links only from page or text sources.
 - Copy generated summaries to the clipboard.
 - Use a cleaner popup with source status, loading, success, and error states.
