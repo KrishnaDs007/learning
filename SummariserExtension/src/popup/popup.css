@@ -237,7 +237,7 @@ textarea:focus {
 	display: grid;
 	place-items: center;
 	align-content: center;
-	min-height: 225px;
+	min-height: 160px;
 	gap: 8px;
 	color: var(--muted);
 	text-align: center;
@@ -251,7 +251,7 @@ textarea:focus {
 .loading {
 	display: grid;
 	place-items: center;
-	min-height: 220px;
+	min-height: 160px;
 	gap: 12px;
 	color: var(--muted);
 }
