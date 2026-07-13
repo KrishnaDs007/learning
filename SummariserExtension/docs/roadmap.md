@@ -74,7 +74,7 @@ Goal: produce better summaries from real webpages.
 - Done: improve extraction by removing repeated navigation text and filtering tiny paragraphs.
 - Done: support selected text first, article body second, full-page fallback last.
 - Done: increase input handling with chunked representative long-document prompts.
-- Add prompt templates for different content types: article, documentation, tutorial, product page, forum thread.
+- Done: add prompt templates for different content types: article, documentation, tutorial, product page, forum thread.
 - Add safety handling for blocked pages, PDFs, Chrome internal pages, and pages where content scripts cannot run.
 
 ## Phase 5 - Security, privacy, and release readiness
@@ -112,5 +112,5 @@ Goal: differentiate the extension.
 1. Done: tighten provider error messages and direct-browser API limitations.
 2. Done: add final Chrome Web Store copy and permission explanations.
 3. Capture Chrome Web Store screenshots and create the small promotional image.
-4. Add prompt templates for different content types.
+4. Done: add prompt templates for different content types.
 5. Add safety handling for blocked pages, PDFs, Chrome internal pages, and pages where content scripts cannot run.

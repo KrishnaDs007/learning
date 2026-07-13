@@ -34,6 +34,7 @@ Key features:
 
 - Compact popup for choosing source, provider, summary style, and output length
 - Brief, detailed, bullet, and key-takeaway summary modes
+- Content-aware prompt modes for articles, documentation, tutorials, product pages, and forum threads
 - Links-only extraction mode
 - Right-click selected-text summarisation
 - Draggable right-edge page icon for quick access
@@ -115,4 +116,3 @@ For help, bug reports, or feature requests, contact the developer through the su
 4. Use the popup to summarise the page.
 5. Select text and use the context menu item to test selected-text summarisation.
 6. Try paste, upload, and links-only modes from the popup.
-

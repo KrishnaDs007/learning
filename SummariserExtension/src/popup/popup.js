@@ -18,6 +18,7 @@ const sourceTypeSelect = document.getElementById("source-type");
 const providerSelect = document.getElementById("provider-select");
 const outputModeSelect = document.getElementById("output-mode");
 const summaryTypeSelect = document.getElementById("summary-type");
+const contentTypeSelect = document.getElementById("content-type");
 const summaryLengthSelect = document.getElementById("summary-length");
 const pastePanel = document.getElementById("paste-panel");
 const pasteInput = document.getElementById("paste-input");
@@ -92,6 +93,7 @@ function syncSourcePanels() {
 function syncOutputControls() {
 	const isLinksOnly = outputModeSelect.value === "links";
 	summaryTypeSelect.disabled = isLinksOnly;
+	contentTypeSelect.disabled = isLinksOnly;
 	summaryLengthSelect.disabled = isLinksOnly;
 	providerSelect.disabled = isLinksOnly;
 }
@@ -128,6 +130,7 @@ async function handleRun() {
 			source.text,
 			summaryTypeSelect.value,
 			summaryLengthSelect.value,
+			contentTypeSelect.value,
 		);
 		const summary = await ProviderRegistry.summarizeWithProvider(profile, prompt);
 		state.lastOutput = summary;

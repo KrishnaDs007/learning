@@ -24,6 +24,7 @@ Use this checklist after loading the unpacked extension from this project folder
 - Set `Source` to `Page / selected text` and run a summary on a readable article page.
 - Set `Source` to `Paste text`, paste custom text, and run a summary.
 - Set `Source` to `Upload file`, choose a supported file, and run a summary.
+- Change `Content` between `Auto`, `Documentation`, and `Forum thread` on suitable sources and confirm the output focus changes.
 - Switch `Output` to `Links only` and confirm links render without requiring a provider.
 - Confirm recent history shows the latest summary or links output.
 - Click a recent history item and confirm it restores into the output panel.

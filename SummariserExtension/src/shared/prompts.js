@@ -70,7 +70,7 @@
 		return selected;
 	}
 
-	function buildSummaryPrompt(rawText, summaryType, summaryLength) {
+	function buildSummaryPrompt(rawText, summaryType, summaryLength, contentType = "auto") {
 		const text = prepareSourceText(rawText);
 		const lengthInstructions = {
 			short: "Keep it very concise in 3-4 sentences.",
@@ -85,9 +85,19 @@
 			takeaways: "Extract the key takeaways and practical implications.",
 		};
 
+		const contentInstructions = {
+			auto: "Infer the content type and adapt the summary structure to what is most useful.",
+			article: "Treat the source as an article. Emphasize the main argument, key facts, evidence, people, organizations, dates, and any conclusions.",
+			documentation: "Treat the source as technical documentation. Emphasize purpose, prerequisites, setup steps, APIs/options, constraints, and common mistakes.",
+			tutorial: "Treat the source as a tutorial. Emphasize the goal, step-by-step flow, required tools, important commands/settings, and expected outcome.",
+			product: "Treat the source as a product page. Emphasize what the product does, target users, features, pricing or availability details, claims, limitations, and calls to action.",
+			forum: "Treat the source as a forum or discussion thread. Emphasize the original question, consensus answer, competing viewpoints, useful fixes, warnings, and unresolved points.",
+		};
+
 		return [
 			styleInstructions[summaryType] || styleInstructions.brief,
 			lengthInstructions[summaryLength] || lengthInstructions.medium,
+			contentInstructions[contentType] || contentInstructions.auto,
 			"Do not invent facts. Preserve important names, numbers, and dates.",
 			"Text to summarise:",
 			text,

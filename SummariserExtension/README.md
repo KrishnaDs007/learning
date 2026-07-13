@@ -10,6 +10,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 - Configure Gemini, OpenAI / ChatGPT, Anthropic / Claude, xAI / Grok, or a custom OpenAI-compatible endpoint.
 - Gemini defaults to `gemini-3.5-flash`.
 - Choose from brief, detailed, and bullet-point summary modes.
+- Tune summaries for articles, documentation, tutorials, product pages, or forum threads.
 - Control summary length with short, medium, and long options.
 - Summarise selected text from the right-click context menu.
 - Paste text directly into the popup.

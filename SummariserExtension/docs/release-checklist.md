@@ -16,6 +16,13 @@
   - Bullets
   - Key takeaways
   - Done: links only
+- Confirm content-aware prompt modes:
+  - Done: auto
+  - Done: article
+  - Done: documentation
+  - Done: tutorial
+  - Done: product page
+  - Done: forum thread
 - Confirm supported providers:
   - Done: Gemini
   - Done: OpenAI / ChatGPT API
@@ -52,6 +59,7 @@ Testing automation is not planned for the current pass, but before release manua
 - Pasted-text summary.
 - Text-file upload summary.
 - Link extraction mode.
+- Content type selector changes summary focus.
 - Missing API key state.
 - Invalid API key state.
 - Unavailable model state.
