@@ -7,7 +7,9 @@
   - Done: selected text
   - Done: pasted text
   - Done: uploaded text files
-  - PDF/DOC/DOCX only after a real parsing or provider-file strategy is implemented
+  - Done: PDF upload text extraction for text-based PDFs
+  - Done: DOCX upload text extraction
+  - Done: best-effort legacy DOC upload text recovery
 - Confirm supported output modes:
   - Brief summary
   - Detailed summary
@@ -28,6 +30,7 @@
 - Explain how API keys are stored.
 - Review whether `chrome.storage.sync` or `chrome.storage.local` is more appropriate.
 - Review whether `<all_urls>` is necessary or whether active-tab-only behavior is enough.
+- Review direct browser provider calls and decide whether any public release needs a backend proxy for providers that block browser-origin requests.
 - Add Chrome Web Store permission explanations.
 
 ## Chrome Web Store Assets
@@ -50,6 +53,9 @@ Testing automation is not planned for the current pass, but before release manua
 - Link extraction mode.
 - Missing API key state.
 - Invalid API key state.
+- Unavailable model state.
+- Provider quota/rate-limit state.
+- Provider endpoint or direct-browser request failure state.
 - Provider switching.
 - Blocked pages such as `chrome://` pages.
 - Extension reload after settings changes.

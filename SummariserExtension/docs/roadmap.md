@@ -106,7 +106,7 @@ Goal: differentiate the extension.
 
 ## Proposed next implementation order
 
-1. Tighten provider error messages and direct-browser API limitations.
+1. Done: tighten provider error messages and direct-browser API limitations.
 2. Add final Chrome Web Store copy, screenshots, and permission explanations.
 3. Add prompt templates for different content types.
 4. Add safety handling for blocked pages, PDFs, Chrome internal pages, and pages where content scripts cannot run.

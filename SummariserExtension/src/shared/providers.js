@@ -157,8 +157,9 @@
 
 	async function summarizeWithGemini(profile, prompt) {
 		const baseUrl = trimTrailingSlash(profile.baseUrl || PROVIDERS.gemini.baseUrl);
+		const config = getProviderConfig(profile.type);
 		const url = `${baseUrl}/v1beta/models/${encodeURIComponent(profile.model)}:generateContent?key=${encodeURIComponent(profile.apiKey)}`;
-		const res = await fetch(url, {
+		const res = await fetchProvider(config, url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -171,8 +172,8 @@
 		});
 
 		if (!res.ok) {
-			const body = await res.json().catch(() => ({}));
-			throw new Error(body.error?.message || "Gemini could not generate a summary.");
+			const body = await readResponseBody(res);
+			throw new Error(getProviderErrorMessage(config, res, body, profile));
 		}
 
 		const data = await res.json();
@@ -187,7 +188,7 @@
 			throw new Error("Add a base URL for this custom provider.");
 		}
 
-		const res = await fetch(`${baseUrl}/chat/completions`, {
+		const res = await fetchProvider(config, `${baseUrl}/chat/completions`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -210,8 +211,8 @@
 		});
 
 		if (!res.ok) {
-			const body = await res.json().catch(() => ({}));
-			throw new Error(body.error?.message || `${config.label} could not generate a summary.`);
+			const body = await readResponseBody(res);
+			throw new Error(getProviderErrorMessage(config, res, body, profile));
 		}
 
 		const data = await res.json();
@@ -220,7 +221,8 @@
 
 	async function summarizeWithAnthropic(profile, prompt) {
 		const baseUrl = trimTrailingSlash(profile.baseUrl || PROVIDERS.anthropic.baseUrl);
-		const res = await fetch(`${baseUrl}/messages`, {
+		const config = getProviderConfig(profile.type);
+		const res = await fetchProvider(config, `${baseUrl}/messages`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -237,8 +239,8 @@
 		});
 
 		if (!res.ok) {
-			const body = await res.json().catch(() => ({}));
-			throw new Error(body.error?.message || "Anthropic could not generate a summary.");
+			const body = await readResponseBody(res);
+			throw new Error(getProviderErrorMessage(config, res, body, profile));
 		}
 
 		const data = await res.json();
@@ -247,6 +249,83 @@
 
 	function trimTrailingSlash(value) {
 		return value.replace(/\/+$/, "");
+	}
+
+	async function fetchProvider(config, url, options) {
+		try {
+			return await fetch(url, options);
+		} catch (error) {
+			throw new Error(
+				`Could not reach ${config.label} from the extension. Check your internet connection, provider URL, and whether this provider allows direct browser API calls.`,
+			);
+		}
+	}
+
+	async function readResponseBody(response) {
+		const contentType = response.headers.get("content-type") || "";
+		if (contentType.includes("application/json")) {
+			return response.json().catch(() => ({}));
+		}
+
+		const text = await response.text().catch(() => "");
+		return { message: text };
+	}
+
+	function getProviderErrorMessage(config, response, body, profile) {
+		const providerMessage = getProviderMessage(body);
+		const model = profile.model || config.defaultModel;
+
+		if (response.status === 400) {
+			return `${config.label} rejected the request. Check that model "${model}" supports chat/text generation and that the source is not too large.${formatProviderMessage(providerMessage)}`;
+		}
+
+		if (response.status === 401 || response.status === 403) {
+			return `${config.label} rejected the API key. Check that the key is correct, active, and allowed to use model "${model}".${formatProviderMessage(providerMessage)}`;
+		}
+
+		if (response.status === 404) {
+			return `${config.label} could not find model "${model}" or the configured endpoint. Update the model name or base URL in settings.${formatProviderMessage(providerMessage)}`;
+		}
+
+		if (response.status === 408 || response.status === 504) {
+			return `${config.label} took too long to respond. Try again with a shorter source or switch to another model.${formatProviderMessage(providerMessage)}`;
+		}
+
+		if (response.status === 413) {
+			return `${config.label} says this source is too large. Try a shorter pasted section or a smaller file.${formatProviderMessage(providerMessage)}`;
+		}
+
+		if (response.status === 429) {
+			return `${config.label} rate limit or quota was reached. Wait a little, check billing/quota, or switch providers.${formatProviderMessage(providerMessage)}`;
+		}
+
+		if (response.status >= 500) {
+			return `${config.label} is having a server problem right now. Try again later or switch providers.${formatProviderMessage(providerMessage)}`;
+		}
+
+		return `${config.label} could not generate a summary.${formatProviderMessage(providerMessage)}`;
+	}
+
+	function getProviderMessage(body) {
+		if (!body) {
+			return "";
+		}
+
+		if (typeof body === "string") {
+			return body;
+		}
+
+		return body.error?.message || body.error?.type || body.message || "";
+	}
+
+	function formatProviderMessage(message) {
+		if (!message) {
+			return "";
+		}
+
+		const compactMessage = String(message).replace(/\s+/g, " ").trim();
+		const visibleMessage = compactMessage.length > 280 ? `${compactMessage.slice(0, 277)}...` : compactMessage;
+		return ` Provider said: ${visibleMessage}`;
 	}
 
 	window.ProviderRegistry = {
