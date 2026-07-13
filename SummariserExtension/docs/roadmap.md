@@ -88,6 +88,9 @@ Goal: prepare for public use or a polished personal release.
 - Avoid broad `<all_urls>` host permissions where possible.
 - Add manual QA cases for common sites and blocked pages later. Testing automation is intentionally not part of the current pass.
 - Add Chrome Web Store assets: icons, screenshots, description, privacy disclosures.
+- Done: draft Chrome Web Store short description, detailed description, privacy practices text, support wording, and permission explanations.
+- Done: confirm Chrome-required icon sizes are present in `assets/icons/`.
+- Add Chrome Web Store screenshots and a 440x280 small promotional image.
 - Decide whether direct browser API-key usage is acceptable or whether a backend proxy is needed.
 - Done: add `docs/release-checklist.md`.
 - Done: add `docs/privacy.md`.
@@ -107,6 +110,7 @@ Goal: differentiate the extension.
 ## Proposed next implementation order
 
 1. Done: tighten provider error messages and direct-browser API limitations.
-2. Add final Chrome Web Store copy, screenshots, and permission explanations.
-3. Add prompt templates for different content types.
-4. Add safety handling for blocked pages, PDFs, Chrome internal pages, and pages where content scripts cannot run.
+2. Done: add final Chrome Web Store copy and permission explanations.
+3. Capture Chrome Web Store screenshots and create the small promotional image.
+4. Add prompt templates for different content types.
+5. Add safety handling for blocked pages, PDFs, Chrome internal pages, and pages where content scripts cannot run.

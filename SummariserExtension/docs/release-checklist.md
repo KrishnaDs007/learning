@@ -25,22 +25,23 @@
 
 ## Privacy And Permissions
 
-- Add a privacy document explaining what text is collected and where it is sent.
-- Explain that the active provider receives the summarised source text.
-- Explain how API keys are stored.
+- Done: add a privacy document explaining what text is collected and where it is sent.
+- Done: explain that the active provider receives the summarised source text.
+- Done: explain how API keys are stored.
 - Review whether `chrome.storage.sync` or `chrome.storage.local` is more appropriate.
 - Review whether `<all_urls>` is necessary or whether active-tab-only behavior is enough.
 - Review direct browser provider calls and decide whether any public release needs a backend proxy for providers that block browser-origin requests.
-- Add Chrome Web Store permission explanations.
+- Done: add Chrome Web Store permission explanations.
 
 ## Chrome Web Store Assets
 
-- Extension icon sizes: 16, 32, 48, 128.
+- Done: extension icon sizes: 16, 32, 48, 128.
+- Done: draft short description.
+- Done: draft detailed description.
+- Done: draft privacy practices text.
+- Done: draft support/contact wording.
 - Store screenshots.
-- Short description.
-- Detailed description.
-- Privacy practices text.
-- Support/contact information if publishing publicly.
+- Small promotional image.
 
 ## Pre-release Manual Checks
 

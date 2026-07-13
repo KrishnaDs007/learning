@@ -9,6 +9,8 @@ This folder is the project knowledge base for the AI Summariser Chrome extension
 - [Provider support](./provider-support.md): plan for Gemini, OpenAI, Anthropic, Grok, and custom providers.
 - [Release checklist](./release-checklist.md): release readiness, privacy, permissions, and manual checks.
 - [Privacy plan](./privacy.md): planned privacy wording and data-flow notes.
+- [Chrome Web Store listing](./chrome-web-store-listing.md): drafted listing copy, privacy practices text, support wording, and permission explanations.
+- [Chrome Web Store assets](./chrome-web-store-assets.md): icon status, screenshot plan, promo image requirements, and pre-upload asset checklist.
 
 ## Suggested future docs
 
