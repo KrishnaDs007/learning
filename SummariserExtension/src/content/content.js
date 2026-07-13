@@ -23,22 +23,115 @@ function getArticleText() {
 		return selectedText;
 	}
 
-	const preferredContainer = document.querySelector(
-		"article, main, [role='main'], .article, .post, .entry-content",
-	);
-
-	if (preferredContainer) {
-		const text = cleanText(preferredContainer.innerText || preferredContainer.textContent || "");
-		if (text.length > 200) {
-			return text;
-		}
+	const preferredContainer = findReadableContainer();
+	const paragraphs = getReadableParagraphs(preferredContainer || document.body);
+	if (paragraphs.length > 0) {
+		return dedupeTextBlocks(paragraphs).join("\n\n");
 	}
 
-	const paragraphs = Array.from(document.querySelectorAll("p"))
-		.map((paragraph) => cleanText(paragraph.innerText || paragraph.textContent || ""))
-		.filter((text) => text.length > 40);
+	if (preferredContainer) {
+		return cleanExtractedText(preferredContainer.innerText || preferredContainer.textContent || "");
+	}
 
-	return paragraphs.join("\n\n");
+	return cleanExtractedText(document.body?.innerText || document.body?.textContent || "");
+}
+
+function findReadableContainer() {
+	const selectors = [
+		"article",
+		"main",
+		"[role='main']",
+		".article",
+		".post",
+		".entry-content",
+		".content",
+	];
+	const candidates = selectors
+		.flatMap((selector) => Array.from(document.querySelectorAll(selector)))
+		.filter((element) => !isIgnoredElement(element));
+
+	return candidates
+		.map((element) => ({
+			element,
+			score: getTextDensityScore(element),
+		}))
+		.filter((candidate) => candidate.score > 200)
+		.sort((a, b) => b.score - a.score)[0]?.element || null;
+}
+
+function getReadableParagraphs(root) {
+	return Array.from(root.querySelectorAll("p, li, blockquote, h1, h2, h3"))
+		.filter((element) => !isIgnoredElement(element))
+		.map((element) => cleanText(element.innerText || element.textContent || ""))
+		.filter(isUsefulTextBlock);
+}
+
+function cleanExtractedText(text) {
+	return dedupeTextBlocks(
+		text
+			.split(/\n+/)
+			.map(cleanText)
+			.filter(isUsefulTextBlock),
+	).join("\n\n");
+}
+
+function isIgnoredElement(element) {
+	return Boolean(element.closest([
+		"nav",
+		"header",
+		"footer",
+		"aside",
+		"script",
+		"style",
+		"noscript",
+		"form",
+		"button",
+		"[role='navigation']",
+		"[role='banner']",
+		"[role='contentinfo']",
+		"[aria-hidden='true']",
+		".nav",
+		".navbar",
+		".menu",
+		".sidebar",
+		".footer",
+		".header",
+		".advertisement",
+		".ads",
+		".cookie",
+	].join(",")));
+}
+
+function isUsefulTextBlock(text) {
+	if (!text || text.length < 45) {
+		return false;
+	}
+
+	const words = text.split(/\s+/).filter(Boolean);
+	const linkLikeText = /^(home|menu|share|subscribe|sign in|log in|privacy|terms|advertisement)$/i;
+	return words.length >= 8 && !linkLikeText.test(text);
+}
+
+function dedupeTextBlocks(blocks) {
+	const seen = new Set();
+	return blocks.filter((block) => {
+		const key = block.toLowerCase().replace(/\W+/g, " ").trim().slice(0, 180);
+		if (!key || seen.has(key)) {
+			return false;
+		}
+		seen.add(key);
+		return true;
+	});
+}
+
+function getTextDensityScore(element) {
+	const text = cleanText(element.innerText || element.textContent || "");
+	const links = Array.from(element.querySelectorAll("a"))
+		.map((link) => cleanText(link.innerText || link.textContent || ""))
+		.join(" ");
+	const linkPenalty = links.length * 0.75;
+	const paragraphBonus = element.querySelectorAll("p").length * 80;
+	return text.length + paragraphBonus - linkPenalty;
 }
 
 function getPageLinks() {
