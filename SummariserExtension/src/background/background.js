@@ -1,7 +1,7 @@
 chrome.runtime.onInstalled.addListener(() => {
-	chrome.storage.sync.set({ summariserEnabled: true });
-	chrome.storage.sync.get(["geminiApiKey"], ({ geminiApiKey }) => {
-		if (!geminiApiKey) {
+	chrome.storage.local.set({ summariserEnabled: true });
+	chrome.storage.local.get(["providerProfiles", "geminiApiKey"], ({ providerProfiles, geminiApiKey }) => {
+		if (!geminiApiKey && (!Array.isArray(providerProfiles) || providerProfiles.length === 0)) {
 			chrome.runtime.openOptionsPage();
 		}
 	});

@@ -83,14 +83,15 @@ Goal: prepare for public use or a polished personal release.
 
 - Done: add a draft privacy note explaining what text is sent to the selected provider.
 - Done: update privacy wording for multi-provider support: Gemini, OpenAI, Anthropic, Grok, or any selected custom provider.
-- Consider using `chrome.storage.local` for sensitive settings if sync is not required.
+- Done: use `chrome.storage.local` for provider profiles and API keys.
 - Decide whether API keys should remain browser-stored for personal use or move behind a backend proxy for public release.
-- Avoid broad `<all_urls>` host permissions where possible.
+- Done: avoid broad `<all_urls>` host permissions by limiting automatic content-script access to `http://` and `https://` pages.
 - Add manual QA cases for common sites and blocked pages later. Testing automation is intentionally not part of the current pass.
 - Add Chrome Web Store assets: icons, screenshots, description, privacy disclosures.
 - Done: draft Chrome Web Store short description, detailed description, privacy practices text, support wording, and permission explanations.
 - Done: confirm Chrome-required icon sizes are present in `assets/icons/`.
-- Add Chrome Web Store screenshots and a 440x280 small promotional image.
+- Done: add a Chrome Web Store 440x280 small promotional image.
+- Add Chrome Web Store screenshots captured from the loaded extension.
 - Decide whether direct browser API-key usage is acceptable or whether a backend proxy is needed.
 - Done: add `docs/release-checklist.md`.
 - Done: add `docs/privacy.md`.
@@ -111,6 +112,6 @@ Goal: differentiate the extension.
 
 1. Done: tighten provider error messages and direct-browser API limitations.
 2. Done: add final Chrome Web Store copy and permission explanations.
-3. Capture Chrome Web Store screenshots and create the small promotional image.
+3. Capture Chrome Web Store screenshots from the loaded extension.
 4. Done: add prompt templates for different content types.
 5. Done: add safety handling for blocked pages, direct PDF tabs, Chrome internal pages, Chrome Web Store pages, and pages where content scripts cannot run.

@@ -80,3 +80,4 @@ This keeps the popup independent from provider-specific request shapes.
 - For public release, decide whether to keep bring-your-own-key behavior or introduce a backend proxy.
 - Privacy docs must explain that source text is sent to the active selected provider.
 - Direct browser API calls can fail if a provider blocks browser-origin requests, changes CORS behavior, or requires a server-side proxy. The popup now converts common provider failures into user-facing guidance for invalid keys, missing models, quota/rate limits, oversized input, endpoint problems, and temporary provider outages.
+- Provider profiles and API keys are stored with `chrome.storage.local` so they stay local to the browser profile instead of syncing by default.

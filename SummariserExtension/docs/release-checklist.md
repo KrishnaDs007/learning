@@ -35,8 +35,8 @@
 - Done: add a privacy document explaining what text is collected and where it is sent.
 - Done: explain that the active provider receives the summarised source text.
 - Done: explain how API keys are stored.
-- Review whether `chrome.storage.sync` or `chrome.storage.local` is more appropriate.
-- Review whether `<all_urls>` is necessary or whether active-tab-only behavior is enough.
+- Done: use `chrome.storage.local` for provider profiles and API keys.
+- Done: narrow automatic content-script access to `http://` and `https://` pages instead of broad `<all_urls>`.
 - Review direct browser provider calls and decide whether any public release needs a backend proxy for providers that block browser-origin requests.
 - Done: add Chrome Web Store permission explanations.
 
@@ -48,7 +48,8 @@
 - Done: draft privacy practices text.
 - Done: draft support/contact wording.
 - Store screenshots.
-- Small promotional image.
+- Done: small promotional image.
+- Add final public support contact/link before publishing.
 
 ## Pre-release Manual Checks
 

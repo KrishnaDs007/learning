@@ -68,19 +68,28 @@
 	}
 
 	function getStorage(keys) {
-		return new Promise((resolve) => chrome.storage.sync.get(keys, resolve));
+		return new Promise((resolve) => chrome.storage.local.get(keys, resolve));
 	}
 
 	function setStorage(values) {
-		return new Promise((resolve) => chrome.storage.sync.set(values, resolve));
+		return new Promise((resolve) => chrome.storage.local.set(values, resolve));
+	}
+
+	function getSyncStorage(keys) {
+		return new Promise((resolve) => chrome.storage.sync.get(keys, resolve));
+	}
+
+	function removeSyncStorage(keys) {
+		return new Promise((resolve) => chrome.storage.sync.remove(keys, resolve));
 	}
 
 	async function getProfiles() {
-		const stored = await getStorage([
+		const keys = [
 			STORAGE_KEYS.profiles,
 			STORAGE_KEYS.defaultProfileId,
 			STORAGE_KEYS.legacyGeminiKey,
-		]);
+		];
+		const stored = await getStorage(keys);
 		const profiles = Array.isArray(stored.providerProfiles)
 			? stored.providerProfiles.map(normalizeProfile)
 			: [];
@@ -91,16 +100,40 @@
 			return markedProfiles;
 		}
 
-		if (stored.geminiApiKey) {
-			return [
+		const migratedProfiles = await migrateSyncProfiles(keys);
+		if (migratedProfiles.length > 0) {
+			return migratedProfiles;
+		}
+
+		return [];
+	}
+
+	async function migrateSyncProfiles(keys) {
+		const synced = await getSyncStorage(keys);
+		const profiles = Array.isArray(synced.providerProfiles)
+			? synced.providerProfiles.map(normalizeProfile)
+			: [];
+
+		if (profiles.length > 0) {
+			const markedProfiles = markDefaultProfile(profiles, synced.defaultProviderId);
+			await saveProfiles(markedProfiles, synced.defaultProviderId);
+			await removeSyncStorage(keys);
+			return markedProfiles;
+		}
+
+		if (synced.geminiApiKey) {
+			const legacyProfiles = [
 				normalizeProfile({
 					id: "legacy-gemini",
 					type: "gemini",
 					name: "Gemini",
-					apiKey: stored.geminiApiKey,
+					apiKey: synced.geminiApiKey,
 					isDefault: true,
 				}),
 			];
+			await saveProfiles(legacyProfiles, "legacy-gemini");
+			await removeSyncStorage(keys);
+			return legacyProfiles;
 		}
 
 		return [];

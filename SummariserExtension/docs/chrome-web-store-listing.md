@@ -70,7 +70,7 @@ AI Summariser processes text only when the user asks it to summarise or extract 
 
 The extension may process webpage text, selected text, pasted text, uploaded file text, extracted links, provider profile details, and recent summary output. Summary requests are sent to the active AI provider selected by the user, such as Gemini, OpenAI, Anthropic, xAI, or a custom OpenAI-compatible endpoint. The extension does not sell user data and does not use user data for advertising.
 
-Provider API keys are stored in Chrome extension storage so the user can run summaries with their own provider account. Recent summary and links history is stored locally and can be cleared from the popup.
+Provider API keys are stored locally in Chrome extension storage so the user can run summaries with their own provider account. Recent summary and links history is also stored locally and can be cleared from the popup.
 
 ## Remote Code Declaration
 
@@ -96,13 +96,13 @@ Required to save provider profiles, the selected default provider, temporary sel
 
 Required to inject the content script into the active tab when Chrome has not already loaded it, so the extension can read page text after a user action.
 
-### Host permission: `<all_urls>`
+### Site access
 
-Currently required because the extension is designed to summarise arbitrary webpages and show the optional on-page summariser icon on supported sites. Before public release, review whether this can be reduced to active-tab-only behavior or narrower optional host permissions.
+The content script is limited to normal `http://` and `https://` webpages. This lets the extension show the optional on-page summariser icon and extract page text on standard websites. Chrome internal pages, Chrome Web Store pages, browser extension pages, and direct PDF tabs are blocked or handled with user-facing guidance.
 
 ## Support / Contact Wording
 
-For support, include a public support email, GitHub Issues link, or project website before publishing.
+Status: needs final public support email, GitHub Issues link, or project website before publishing.
 
 Suggested text:
 

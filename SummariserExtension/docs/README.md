@@ -11,6 +11,7 @@ This folder is the project knowledge base for the AI Summariser Chrome extension
 - [Privacy plan](./privacy.md): planned privacy wording and data-flow notes.
 - [Chrome Web Store listing](./chrome-web-store-listing.md): drafted listing copy, privacy practices text, support wording, and permission explanations.
 - [Chrome Web Store assets](./chrome-web-store-assets.md): icon status, screenshot plan, promo image requirements, and pre-upload asset checklist.
+- [Store screenshot guide](./store-screenshot-guide.md): exact screenshot capture steps, filenames, and privacy checks.
 
 ## Suggested future docs
 

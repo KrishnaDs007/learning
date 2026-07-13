@@ -18,6 +18,7 @@ The required extension icon sizes exist in `assets/icons/` and are referenced by
 | `assets/icons/icon-48.png` | 48x48 | Ready |
 | `assets/icons/icon-128.png` | 128x128 | Ready |
 | `assets/icons/icon-1024.png` | 1254x1254 | Source/reference image only |
+| `assets/store/small-promo-440x280.png` | 440x280 | Ready |
 
 ## Icon Readiness Notes
 
@@ -39,6 +40,10 @@ Use:
 ### Screenshots
 
 Status: still needs capture from the loaded extension.
+
+Capture guide:
+
+- `docs/store-screenshot-guide.md`
 
 Chrome accepts screenshots at:
 
@@ -65,17 +70,15 @@ Capture notes:
 
 ### Small Promotional Image
 
-Status: needs creation.
+Status: ready.
 
 Required size:
 
 - 440x280
 
-Recommended direction:
+Use:
 
-- Use the extension icon and a clean product-focused composition.
-- Avoid heavy text because promo images are shown small.
-- Communicate summarising, provider choice, and quick reading without relying on a screenshot.
+- `assets/store/small-promo-440x280.png`
 
 ### Optional Marquee Promotional Image
 
@@ -109,8 +112,7 @@ Included there:
 - Confirm `assets/icons/icon-128.png` looks good on light and dark backgrounds.
 - Capture at least one 1280x800 screenshot.
 - Prefer capturing all five recommended screenshots.
-- Create the 440x280 small promotional image.
+- Done: create the 440x280 small promotional image.
 - Review all screenshots for hidden API keys or private content.
 - Add final support contact details in the listing copy.
 - Re-check manifest permissions against the permission explanations.
-

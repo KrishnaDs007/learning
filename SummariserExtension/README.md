@@ -20,7 +20,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 - Use a cleaner popup with source status, loading, success, and error states.
 - Use a compact draggable on-page icon that stays on the right edge and reappears after the popup closes.
 - Store and restore recent summary/link outputs from local history.
-- Store provider API keys in Chrome extension storage.
+- Store provider API keys locally in Chrome extension storage.
 - Get provider-specific API key steps directly from the settings page.
 - Close the settings window manually or let it auto-close after saving.
 - Hide settings success messages automatically after a short readable delay.
@@ -31,7 +31,8 @@ It supports summarising the full page content, selected text, pasted text, and u
 ```text
 .
 |-- assets/
-|   `-- icons/          # Extension icon assets in Chrome-required sizes
+|   |-- icons/          # Extension icon assets in Chrome-required sizes
+|   `-- store/          # Chrome Web Store promotional assets
 |-- docs/               # Project analysis, roadmap, and future docs
 |-- manifest.json       # Chrome extension manifest
 |-- src/
@@ -118,7 +119,7 @@ See [docs/roadmap.md](./docs/roadmap.md) for the detailed plan.
 
 ## Privacy Note
 
-The extension sends source text to the AI provider selected by the user. Provider API keys are stored in Chrome extension storage. Before publishing publicly, add final privacy wording and review whether direct API-key usage is appropriate for the target audience.
+The extension sends source text to the AI provider selected by the user. Provider API keys are stored locally in Chrome extension storage. Before publishing publicly, review whether direct API-key usage is appropriate for the target audience.
 
 ## Documentation
 

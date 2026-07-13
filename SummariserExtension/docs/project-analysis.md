@@ -16,7 +16,7 @@ This project is a Chrome Manifest V3 extension that extracts text from the activ
 - `src/popup/popup.js`: reads the API key, summarises selected text when available, asks the active tab for text otherwise, injects the content script if needed, calls Gemini, renders the returned summary, and supports copying the result.
 - `src/options/options.html`: API key settings page with a link to Google AI Studio.
 - `src/options/options.css`: settings page styling.
-- `src/options/options.js`: loads, saves, shows/hides, and clears the Gemini API key using `chrome.storage.sync`.
+- `src/options/options.js`: loads, saves, shows/hides, and clears provider profiles and API keys using local Chrome extension storage.
 - `assets/icons/`: generated extension icon assets in Chrome sizes.
 
 ## Current user flow
@@ -42,7 +42,7 @@ Selected-text flow:
 - It already separates browser responsibilities into popup, options, background, and content scripts.
 - It handles missing content scripts by attempting runtime injection.
 - It supports multiple summary styles.
-- It uses `chrome.storage.sync`, so settings can follow the user across Chrome profiles.
+- It uses local Chrome extension storage for provider profiles and API keys so sensitive values do not sync across Chrome profiles by default.
 - It now keeps the Gemini model name and input character limit in constants.
 - It now avoids logging API keys, raw page text, or full prompts.
 - It now has a clearer `src/` and `assets/` folder structure.
