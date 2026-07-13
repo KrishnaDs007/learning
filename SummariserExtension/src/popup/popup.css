@@ -220,8 +220,8 @@ textarea:focus {
 
 .result {
 	flex: 1;
-	min-height: 210px;
-	max-height: 285px;
+	min-height: 180px;
+	max-height: 260px;
 	padding: 16px;
 	border: 1px solid var(--border);
 	border-radius: 8px;
@@ -344,6 +344,7 @@ textarea:focus {
 	display: grid;
 	grid-template-columns: 1fr 108px;
 	gap: 10px;
+	padding: 2px 0 4px;
 }
 
 .primary-button,
