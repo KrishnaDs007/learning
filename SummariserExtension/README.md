@@ -19,6 +19,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 - Copy generated summaries to the clipboard.
 - Use a cleaner popup with source status, loading, success, and error states.
 - Use a compact draggable on-page icon that stays on the right edge and reappears after the popup closes.
+- Open the popup with the default keyboard shortcut `Alt+Shift+S`.
 - Store and restore recent summary/link outputs from local history.
 - Store provider API keys locally in Chrome extension storage.
 - Get provider-specific API key steps directly from the settings page.
@@ -58,10 +59,16 @@ It supports summarising the full page content, selected text, pasted text, and u
 To summarise a page:
 
 1. Open a webpage.
-2. Click the AI Summariser extension icon.
+2. Click the AI Summariser extension icon or press `Alt+Shift+S`.
 3. Choose a summary type.
 4. Click `Summarise`.
 5. Use `Copy` to copy the result.
+
+To change the shortcut:
+
+1. Open `chrome://extensions/shortcuts`.
+2. Find `AI Summariser`.
+3. Update the `Open AI Summariser` shortcut.
 
 To summarise pasted text:
 

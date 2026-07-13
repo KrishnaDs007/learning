@@ -37,6 +37,7 @@ Key features:
 - Content-aware prompt modes for articles, documentation, tutorials, product pages, and forum threads
 - Links-only extraction mode
 - Right-click selected-text summarisation
+- Keyboard shortcut for opening the popup
 - Draggable right-edge page icon for quick access
 - Recent local history with restore and clear controls
 - Provider-specific setup links for creating API keys
@@ -102,11 +103,17 @@ The content script is limited to normal `http://` and `https://` webpages. This 
 
 ## Support / Contact Wording
 
-Status: needs final public support email, GitHub Issues link, or project website before publishing.
+Support page:
 
-Suggested text:
+- https://krishnasportfolio-rho.vercel.app/#contact
 
-For help, bug reports, or feature requests, contact the developer through the support link listed on this Chrome Web Store page. Please include the Chrome version, extension version, provider type, and a short description of what you were trying to summarise. Do not send API keys or private page content in support requests.
+Support email:
+
+- krishnadevashish17@gmail.com
+
+Suggested support text:
+
+For help, bug reports, or feature requests, contact the developer at https://krishnasportfolio-rho.vercel.app/#contact or email krishnadevashish17@gmail.com. Please include the Chrome version, extension version, provider type, and a short description of what you were trying to summarise. Do not send API keys or private page content in support requests.
 
 ## Review Notes For Testers
 

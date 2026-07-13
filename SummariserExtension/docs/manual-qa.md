@@ -8,6 +8,7 @@ Use this checklist after loading the unpacked extension from this project folder
 - Refresh any already-open webpage tabs before testing content-script behavior.
 - Open the extension settings page and confirm at least one provider profile is saved.
 - Confirm the default provider appears selected in the popup.
+- Open `chrome://extensions/shortcuts` and confirm `Open AI Summariser` is assigned or assignable.
 
 ## Selected Text Flow
 
@@ -22,6 +23,7 @@ Use this checklist after loading the unpacked extension from this project folder
 ## Popup Source Flow
 
 - Set `Source` to `Page / selected text` and run a summary on a readable article page.
+- Press `Alt+Shift+S` on a normal webpage and confirm the popup opens.
 - Set `Source` to `Paste text`, paste custom text, and run a summary.
 - Set `Source` to `Upload file`, choose a supported file, and run a summary.
 - Change `Content` between `Auto`, `Documentation`, and `Forum thread` on suitable sources and confirm the output focus changes.

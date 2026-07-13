@@ -118,5 +118,5 @@ Included there:
 - Capture remaining upload/paste, page icon, and links-only screenshots.
 - Done: create the 440x280 small promotional image.
 - Review all screenshots for hidden API keys or private content.
-- Add final support contact details in the listing copy.
+- Done: add final support contact details in the listing copy.
 - Re-check manifest permissions against the permission explanations.

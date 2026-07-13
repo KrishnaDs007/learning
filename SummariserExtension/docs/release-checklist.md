@@ -54,7 +54,7 @@
   - Remaining: on-page icon screenshot.
   - Remaining: links-only screenshot.
 - Done: small promotional image.
-- Add final public support contact/link before publishing.
+- Done: add final public support contact/link before publishing.
 
 ## Pre-release Manual Checks
 
@@ -66,6 +66,7 @@ Testing automation is not planned for the current pass, but before release manua
 - Text-file upload summary.
 - Link extraction mode.
 - Content type selector changes summary focus.
+- Keyboard shortcut opens the popup.
 - Missing API key state.
 - Invalid API key state.
 - Unavailable model state.
