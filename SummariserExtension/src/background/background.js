@@ -70,6 +70,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 function showSelectedTextBadge() {
-		chrome.action.setBadgeText({ text: "TXT" });
-		chrome.action.setBadgeBackgroundColor({ color: "#0f766e" });
+	chrome.action.setBadgeText({ text: "TXT" });
+	chrome.action.setBadgeBackgroundColor({ color: "#0f766e" });
 }

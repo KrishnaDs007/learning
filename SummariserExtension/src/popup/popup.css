@@ -237,7 +237,7 @@ textarea:focus {
 	display: grid;
 	place-items: center;
 	align-content: center;
-	min-height: 160px;
+	min-height: 120px;
 	gap: 8px;
 	color: var(--muted);
 	text-align: center;

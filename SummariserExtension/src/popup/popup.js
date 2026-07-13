@@ -192,6 +192,7 @@ async function getPageSource(outputMode) {
 
 	const tabs = await queryActiveTab();
 	const tab = tabs[0];
+	validateReadableTab(tab, outputMode);
 	const messageType = outputMode === "links" ? "GET_PAGE_LINKS" : "GET_ARTICLE_TEXT";
 	const response = await requestPageData(tab.id, messageType);
 
@@ -247,7 +248,7 @@ function queryActiveTab() {
 function requestPageData(tabId, messageType) {
 	return new Promise((resolve, reject) => {
 		chrome.tabs.sendMessage(tabId, { type: messageType }, (response) => {
-			if (!chrome.runtime.lastError) {
+			if (!chrome.runtime.lastError && response) {
 				resolve(response);
 				return;
 			}
@@ -260,7 +261,7 @@ function requestPageData(tabId, messageType) {
 				})
 				.then(() => {
 					chrome.tabs.sendMessage(tabId, { type: messageType }, (retryResponse) => {
-						if (chrome.runtime.lastError) {
+						if (chrome.runtime.lastError || !retryResponse) {
 							reject(new Error("This page cannot be read. Try selected text, pasted text, or a text file."));
 							return;
 						}
@@ -273,6 +274,43 @@ function requestPageData(tabId, messageType) {
 				});
 		});
 	});
+}
+
+function validateReadableTab(tab, outputMode) {
+	const url = tab && tab.url ? tab.url : "";
+
+	if (!url) {
+		throw new Error("Chrome did not provide a readable page URL. Try pasted text or upload a file.");
+	}
+
+	if (isRestrictedUrl(url)) {
+		throw new Error("Chrome blocks extensions from reading this kind of page. Try selected text, pasted text, or upload a file instead.");
+	}
+
+	if (isChromeWebStoreUrl(url)) {
+		throw new Error("Chrome blocks extensions from reading Chrome Web Store pages. Try pasted text or another webpage.");
+	}
+
+	if (isDirectPdfUrl(url) && outputMode !== "links") {
+		throw new Error("Direct PDF tabs are not readable as webpages yet. Download the PDF, then use Upload file to summarise it.");
+	}
+}
+
+function isRestrictedUrl(url) {
+	return /^(chrome|chrome-extension|edge|about|devtools):/i.test(url);
+}
+
+function isChromeWebStoreUrl(url) {
+	return /^https:\/\/chromewebstore\.google\.com\//i.test(url);
+}
+
+function isDirectPdfUrl(url) {
+	try {
+		const parsedUrl = new URL(url);
+		return parsedUrl.pathname.toLowerCase().endsWith(".pdf");
+	} catch (error) {
+		return /\.pdf(?:[?#]|$)/i.test(url);
+	}
 }
 
 function hasExtractedText(response) {

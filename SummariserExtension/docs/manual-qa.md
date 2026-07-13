@@ -41,6 +41,8 @@ Use this checklist after loading the unpacked extension from this project folder
 ## Expected Error States
 
 - Run on `chrome://extensions` or another restricted page and confirm the popup shows a readable access error.
+- Run on a Chrome Web Store page and confirm the popup explains that Chrome blocks that page.
+- Open a PDF directly in a browser tab and confirm the popup asks the user to download and upload the PDF instead.
 - Try summarising with no saved provider and confirm settings opens.
 - Upload an unsupported file type and confirm the unsupported-file message is clear.
 - Try an empty file and confirm the popup shows an empty-file message.

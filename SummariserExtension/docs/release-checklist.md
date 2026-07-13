@@ -67,4 +67,6 @@ Testing automation is not planned for the current pass, but before release manua
 - Provider endpoint or direct-browser request failure state.
 - Provider switching.
 - Blocked pages such as `chrome://` pages.
+- Chrome Web Store page access error.
+- Direct PDF tab guidance to use Upload file.
 - Extension reload after settings changes.
