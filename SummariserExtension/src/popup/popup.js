@@ -10,6 +10,8 @@ const state = {
 
 const summariseButton = document.getElementById("summarise");
 const copyButton = document.getElementById("copy-btn");
+const copyMarkdownButton = document.getElementById("copy-markdown-btn");
+const saveOutputButton = document.getElementById("save-output-btn");
 const settingsButton = document.getElementById("settings-btn");
 const result = document.getElementById("result");
 const status = document.getElementById("status");
@@ -33,6 +35,8 @@ document.addEventListener("DOMContentLoaded", initialisePopup);
 window.addEventListener("unload", notifyPopupClosed);
 summariseButton.addEventListener("click", handleRun);
 copyButton.addEventListener("click", copyOutput);
+copyMarkdownButton.addEventListener("click", copyMarkdownOutput);
+saveOutputButton.addEventListener("click", saveOutputAsText);
 settingsButton.addEventListener("click", () => chrome.runtime.openOptionsPage());
 sourceTypeSelect.addEventListener("change", syncSourcePanels);
 outputModeSelect.addEventListener("change", syncOutputControls);
@@ -42,7 +46,7 @@ if (clearHistoryButton) {
 }
 
 async function initialisePopup() {
-	copyButton.disabled = true;
+	setOutputActionsEnabled(false);
 	chrome.action.setBadgeText({ text: "" });
 	await loadProviders();
 	await loadHistory();
@@ -135,7 +139,7 @@ async function handleRun() {
 		const summary = await ProviderRegistry.summarizeWithProvider(profile, prompt);
 		state.lastOutput = summary;
 		result.textContent = summary;
-		copyButton.disabled = false;
+		setOutputActionsEnabled(true);
 		bringResultIntoView();
 		setStatus(getSuccessMessage(source.text, profile));
 		await saveHistoryItem({
@@ -348,7 +352,7 @@ function renderHistory() {
 function restoreHistoryItem(item) {
 	state.lastOutput = item.output;
 	result.textContent = item.output;
-	copyButton.disabled = false;
+	setOutputActionsEnabled(true);
 	bringResultIntoView();
 	setStatus(`Restored ${item.mode === "links" ? "links" : "summary"} from recent history.`);
 }
@@ -363,7 +367,7 @@ function renderLinks(links) {
 	const uniqueLinks = dedupeLinks(links);
 	if (uniqueLinks.length === 0) {
 		state.lastOutput = "";
-		copyButton.disabled = true;
+		setOutputActionsEnabled(false);
 		setError("No links were found in this source.");
 		return;
 	}
@@ -373,7 +377,7 @@ function renderLinks(links) {
 		return `${label}${link.url}`;
 	}).join("\n");
 	result.textContent = state.lastOutput;
-	copyButton.disabled = false;
+	setOutputActionsEnabled(true);
 	bringResultIntoView();
 	setStatus(`${uniqueLinks.length} link${uniqueLinks.length === 1 ? "" : "s"} extracted.`);
 	saveHistoryItem({
@@ -413,14 +417,75 @@ async function copyOutput() {
 
 	try {
 		await navigator.clipboard.writeText(state.lastOutput);
-		const originalText = copyButton.textContent;
-		copyButton.textContent = "Copied";
-		setTimeout(() => {
-			copyButton.textContent = originalText;
-		}, 1400);
+		flashButtonText(copyButton, "Copied");
 	} catch (error) {
 		setError("Could not copy the output. Select the text and copy it manually.");
 	}
+}
+
+async function copyMarkdownOutput() {
+	if (!state.lastOutput) {
+		return;
+	}
+
+	try {
+		await navigator.clipboard.writeText(buildMarkdownOutput());
+		flashButtonText(copyMarkdownButton, "Copied");
+	} catch (error) {
+		setError("Could not copy Markdown. Select the output and copy it manually.");
+	}
+}
+
+function saveOutputAsText() {
+	if (!state.lastOutput) {
+		return;
+	}
+
+	const blob = new Blob([buildPlainTextExport()], { type: "text/plain;charset=utf-8" });
+	const url = URL.createObjectURL(blob);
+	const link = document.createElement("a");
+	link.href = url;
+	link.download = getExportFileName();
+	document.body.appendChild(link);
+	link.click();
+	link.remove();
+	window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+	flashButtonText(saveOutputButton, "Saved");
+}
+
+function buildMarkdownOutput() {
+	const title = getExportTitle();
+	const sourceLine = sourceLabel.textContent ? `\n\n_Source: ${sourceLabel.textContent}_` : "";
+	return `# ${title}${sourceLine}\n\n${state.lastOutput.trim()}\n`;
+}
+
+function buildPlainTextExport() {
+	const title = getExportTitle();
+	const sourceLine = sourceLabel.textContent ? `Source: ${sourceLabel.textContent}\n\n` : "";
+	return `${title}\n${"=".repeat(title.length)}\n\n${sourceLine}${state.lastOutput.trim()}\n`;
+}
+
+function getExportTitle() {
+	const mode = outputModeSelect.value === "links" ? "Extracted Links" : "AI Summary";
+	return state.source && state.source.title ? `${mode} - ${state.source.title}` : mode;
+}
+
+function getExportFileName() {
+	const timestamp = new Date().toISOString().slice(0, 10);
+	const baseName = getExportTitle()
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/(^-|-$)/g, "")
+		.slice(0, 60) || "ai-summariser-output";
+	return `${baseName}-${timestamp}.txt`;
+}
+
+function flashButtonText(button, message) {
+	const originalText = button.textContent;
+	button.textContent = message;
+	setTimeout(() => {
+		button.textContent = originalText;
+	}, 1400);
 }
 
 function notifyPopupClosed() {
@@ -438,7 +503,7 @@ function notifyPopupClosed() {
 
 function setLoading(message) {
 	summariseButton.disabled = true;
-	copyButton.disabled = true;
+	setOutputActionsEnabled(false);
 	status.classList.remove("error");
 	status.textContent = message;
 	result.innerHTML = `
@@ -458,7 +523,7 @@ function setStatus(message) {
 
 function setError(message) {
 	summariseButton.disabled = false;
-	copyButton.disabled = !state.lastOutput;
+	setOutputActionsEnabled(Boolean(state.lastOutput));
 	status.classList.add("error");
 	status.textContent = message;
 	result.innerHTML = `
@@ -468,6 +533,12 @@ function setError(message) {
 		</div>
 	`;
 	bringResultIntoView();
+}
+
+function setOutputActionsEnabled(enabled) {
+	copyButton.disabled = !enabled;
+	copyMarkdownButton.disabled = !enabled;
+	saveOutputButton.disabled = !enabled;
 }
 
 function bringResultIntoView() {

@@ -17,6 +17,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 - Upload `.txt`, `.md`, `.csv`, `.json`, `.html`, text-based `.pdf`, `.docx`, and best-effort legacy `.doc` files.
 - Extract links only from page or text sources.
 - Copy generated summaries to the clipboard.
+- Copy Markdown exports or save output as a `.txt` file.
 - Use a cleaner popup with source status, loading, success, and error states.
 - Use a compact draggable on-page icon that stays on the right edge and reappears after the popup closes.
 - Open the popup with the default keyboard shortcut `Alt+Shift+S`.

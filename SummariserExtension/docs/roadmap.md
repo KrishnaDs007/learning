@@ -102,7 +102,7 @@ Goal: prepare for public use or a polished personal release.
 Goal: differentiate the extension.
 
 - Done: add keyboard shortcut support with `Alt+Shift+S` opening the popup.
-- Add export options: copy Markdown, save text, share to notes.
+- Done: add export options for copying Markdown and saving output as text.
 - Add multi-language summaries.
 - Add "ask follow-up question about this page."
 - Add custom user prompts.

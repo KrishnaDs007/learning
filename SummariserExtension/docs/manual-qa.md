@@ -19,6 +19,8 @@ Use this checklist after loading the unpacked extension from this project folder
 - Confirm the source label says selected text is ready.
 - Click `Run` and confirm a summary appears.
 - Click `Copy` and confirm the copied text matches the visible summary.
+- Click `Copy Markdown` and confirm the clipboard contains a Markdown title plus the output.
+- Click `Save .txt` and confirm a text file downloads with the output.
 
 ## Popup Source Flow
 
