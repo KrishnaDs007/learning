@@ -32,8 +32,8 @@ Recent summary history is stored locally in Chrome storage and can be cleared fr
 
 Before public release, decide whether to:
 
-- Keep bring-your-own-key storage inside the extension.
-- Move provider calls behind a backend proxy.
+- Keep bring-your-own-key storage inside the extension. Decision for v1: yes.
+- Move provider calls behind a backend proxy. Decision for v1: no; revisit later if public users need managed billing, shared quotas, or providers that block browser requests.
 - Keep all sensitive values local-only or add an explicit user-controlled sync option later.
 
 ## User Controls

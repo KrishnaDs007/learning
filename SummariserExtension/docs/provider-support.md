@@ -76,8 +76,9 @@ This keeps the popup independent from provider-specific request shapes.
 ## Release Considerations
 
 - API keys stored inside the extension are inspectable by the user and are not suitable for hiding a developer-owned key.
-- For personal use, user-provided API keys are acceptable with clear privacy wording.
-- For public release, decide whether to keep bring-your-own-key behavior or introduce a backend proxy.
+- Decision for v1: keep bring-your-own-key behavior and call providers directly from the extension.
+- A backend proxy is not part of the first release because the extension does not ship a developer-owned API key, local key storage keeps the product simpler, and users can choose a provider that works with direct browser requests.
+- Revisit a backend proxy later if public users need managed billing, shared quotas, server-side OCR/file parsing, or providers/endpoints that block browser-origin requests.
 - Privacy docs must explain that source text is sent to the active selected provider.
 - Direct browser API calls can fail if a provider blocks browser-origin requests, changes CORS behavior, or requires a server-side proxy. The popup now converts common provider failures into user-facing guidance for invalid keys, missing models, quota/rate limits, oversized input, endpoint problems, and temporary provider outages.
 - Provider profiles and API keys are stored with `chrome.storage.local` so they stay local to the browser profile instead of syncing by default.

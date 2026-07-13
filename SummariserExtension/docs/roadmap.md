@@ -84,15 +84,15 @@ Goal: prepare for public use or a polished personal release.
 - Done: add a draft privacy note explaining what text is sent to the selected provider.
 - Done: update privacy wording for multi-provider support: Gemini, OpenAI, Anthropic, Grok, or any selected custom provider.
 - Done: use `chrome.storage.local` for provider profiles and API keys.
-- Decide whether API keys should remain browser-stored for personal use or move behind a backend proxy for public release.
+- Done: keep API keys browser-stored with direct provider calls for v1; revisit backend proxy only if public usage requires managed billing, shared quotas, or provider compatibility.
 - Done: avoid broad `<all_urls>` host permissions by limiting automatic content-script access to `http://` and `https://` pages.
 - Add manual QA cases for common sites and blocked pages later. Testing automation is intentionally not part of the current pass.
 - Add Chrome Web Store assets: icons, screenshots, description, privacy disclosures.
 - Done: draft Chrome Web Store short description, detailed description, privacy practices text, support wording, and permission explanations.
 - Done: confirm Chrome-required icon sizes are present in `assets/icons/`.
 - Done: add a Chrome Web Store 440x280 small promotional image.
-- Partially done: add Chrome Web Store screenshots captured from the loaded extension. Popup summary and provider settings screenshots are ready; upload/paste, on-page icon, and links-only screenshots remain.
-- Decide whether direct browser API-key usage is acceptable or whether a backend proxy is needed.
+- Done: add Chrome Web Store screenshots captured from the loaded extension and prepared product screenshots for upload/paste, on-page icon, and links-only output.
+- Done: direct browser API-key usage is acceptable for v1; backend proxy is deferred.
 - Done: add `docs/release-checklist.md`.
 - Done: add `docs/privacy.md`.
 - Done: add `docs/provider-support.md` describing supported providers, required keys, and model configuration.
@@ -112,6 +112,6 @@ Goal: differentiate the extension.
 
 1. Done: tighten provider error messages and direct-browser API limitations.
 2. Done: add final Chrome Web Store copy and permission explanations.
-3. Continue Chrome Web Store screenshots: upload/paste, on-page icon, and links-only output.
+3. Done: complete Chrome Web Store screenshots.
 4. Done: add prompt templates for different content types.
 5. Done: add safety handling for blocked pages, direct PDF tabs, Chrome internal pages, Chrome Web Store pages, and pages where content scripts cannot run.

@@ -52,6 +52,7 @@ Current limitations:
 - Image-only or scanned PDFs are not supported because OCR is not included.
 - Some Chrome internal pages and restricted websites cannot be read by browser extensions.
 - Some AI providers or custom endpoints may require a backend proxy if they block direct browser requests.
+- The first release uses bring-your-own-key direct provider calls rather than a backend proxy.
 
 ## Category
 

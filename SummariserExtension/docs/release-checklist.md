@@ -37,7 +37,7 @@
 - Done: explain how API keys are stored.
 - Done: use `chrome.storage.local` for provider profiles and API keys.
 - Done: narrow automatic content-script access to `http://` and `https://` pages instead of broad `<all_urls>`.
-- Review direct browser provider calls and decide whether any public release needs a backend proxy for providers that block browser-origin requests.
+- Done: keep direct browser provider calls with user-provided API keys for v1; no backend proxy for the first release.
 - Done: add Chrome Web Store permission explanations.
 
 ## Chrome Web Store Assets
@@ -50,9 +50,9 @@
 - Store screenshots:
   - Done: popup summary screenshot.
   - Done: provider settings screenshot.
-  - Remaining: upload/paste screenshot.
-  - Remaining: on-page icon screenshot.
-  - Remaining: links-only screenshot.
+  - Done: upload/paste screenshot.
+  - Done: on-page icon screenshot.
+  - Done: links-only screenshot.
 - Done: small promotional image.
 - Done: add final public support contact/link before publishing.
 

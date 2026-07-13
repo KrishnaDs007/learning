@@ -12,10 +12,10 @@ Use this guide to capture the remaining Store screenshots from a real loaded ext
 ## Recommended Screenshot Set
 
 1. Done: popup on a normal webpage with a completed page summary: `assets/store/screenshots/popup-summary-1280x800.png`.
-2. Popup in pasted-text or upload-file mode.
+2. Done: popup in uploaded-file mode: `assets/store/screenshots/popup-upload-1280x800.png`.
 3. Done: provider settings page with saved provider cards and API key setup guidance: `assets/store/screenshots/provider-settings-1280x800.png`.
-4. Draggable right-edge page icon on a readable webpage.
-5. Links-only output in the popup.
+4. Done: draggable right-edge page icon on a readable webpage: `assets/store/screenshots/page-icon-1280x800.png`.
+5. Done: links-only output in the popup: `assets/store/screenshots/links-output-1280x800.png`.
 
 ## Capture Steps
 

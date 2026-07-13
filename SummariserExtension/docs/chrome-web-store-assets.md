@@ -39,7 +39,7 @@ Use:
 
 ### Screenshots
 
-Status: partially captured.
+Status: ready.
 
 Capture guide:
 
@@ -49,6 +49,9 @@ Ready screenshots:
 
 - `assets/store/screenshots/popup-summary-1280x800.png`
 - `assets/store/screenshots/provider-settings-1280x800.png`
+- `assets/store/screenshots/popup-upload-1280x800.png`
+- `assets/store/screenshots/page-icon-1280x800.png`
+- `assets/store/screenshots/links-output-1280x800.png`
 
 Chrome accepts screenshots at:
 
@@ -57,11 +60,13 @@ Chrome accepts screenshots at:
 
 Screenshots should be full bleed with square corners and no padding.
 
-Remaining recommended screenshot set:
+Recommended screenshot set:
 
-1. Popup using pasted text or uploaded file mode.
-2. On-page draggable right-edge icon on a webpage.
-3. Links-only extraction output.
+1. Done: popup summarising a readable article page.
+2. Done: popup using uploaded file mode.
+3. Done: provider settings page with saved provider cards and API key setup guidance.
+4. Done: on-page draggable right-edge icon on a webpage.
+5. Done: links-only extraction output.
 
 Capture notes:
 
@@ -115,7 +120,7 @@ Included there:
 - Confirm `assets/icons/icon-128.png` looks good on light and dark backgrounds.
 - Done: capture popup summary screenshot.
 - Done: capture provider settings screenshot.
-- Capture remaining upload/paste, page icon, and links-only screenshots.
+- Done: capture upload/paste, page icon, and links-only screenshots.
 - Done: create the 440x280 small promotional image.
 - Review all screenshots for hidden API keys or private content.
 - Done: add final support contact details in the listing copy.
