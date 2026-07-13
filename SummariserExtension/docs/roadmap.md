@@ -13,7 +13,7 @@ Goal: fix obvious bugs and remove release-blocking risks.
 - Done: open the options page from the popup when no API key is configured.
 - Done: make Gemini model name configurable in one place.
 - Done: replace many generic errors with user-friendly states.
-- Manually test the selected-text popup flow in Chrome.
+- Done: add a manual QA checklist for selected-text and popup flow in Chrome.
 
 ## Phase 2 - Clean project structure
 

@@ -15,3 +15,4 @@ This folder is the project knowledge base for the AI Summariser Chrome extension
 - `design-notes.md`: screenshots, Stitch exports, design decisions, and UI references.
 - `api-notes.md`: provider model choices, prompt formats, limits, and error handling decisions.
 - `testing.md`: test strategy for popup logic, content extraction, and extension flows.
+- [Manual QA checklist](./manual-qa.md)
