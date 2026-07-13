@@ -2,6 +2,7 @@ const MIN_TEXT_LENGTH = 40;
 const HISTORY_STORAGE_KEY = "summaryHistory";
 const MAX_HISTORY_ITEMS = 5;
 const SUPPORTED_TEXT_FILE_EXTENSIONS = [".txt", ".md", ".csv", ".json", ".html", ".htm"];
+const SUPPORTED_PDF_FILE_EXTENSIONS = [".pdf"];
 
 const state = {
 	lastOutput: "",
@@ -168,7 +169,7 @@ async function getSelectedSource(outputMode) {
 	}
 
 	if (sourceType === "upload") {
-		const text = await readUploadedTextFile();
+		const text = await readUploadedFile();
 		return {
 			text,
 			links: extractLinksFromText(text),
@@ -274,7 +275,7 @@ function requestPageData(tabId, messageType) {
 	});
 }
 
-function readUploadedTextFile() {
+function readUploadedFile() {
 	return new Promise((resolve, reject) => {
 		const file = state.uploadedFile;
 		if (!file) {
@@ -283,12 +284,27 @@ function readUploadedTextFile() {
 		}
 
 		const lowerName = file.name.toLowerCase();
-		const isSupported = SUPPORTED_TEXT_FILE_EXTENSIONS.some((extension) => lowerName.endsWith(extension));
-		if (!isSupported) {
-			reject(new Error("This upload type is planned, but only text-based files are supported right now."));
+		if (SUPPORTED_PDF_FILE_EXTENSIONS.some((extension) => lowerName.endsWith(extension))) {
+			readFileAsArrayBuffer(file)
+				.then((buffer) => resolve(extractTextFromPdf(buffer)))
+				.catch((error) => reject(error));
 			return;
 		}
 
+		const isSupported = SUPPORTED_TEXT_FILE_EXTENSIONS.some((extension) => lowerName.endsWith(extension));
+		if (!isSupported) {
+			reject(new Error("This upload type is planned, but only text-based files and PDFs are supported right now."));
+			return;
+		}
+
+		readFileAsText(file)
+			.then((text) => resolve(text))
+			.catch((error) => reject(error));
+	});
+}
+
+function readFileAsText(file) {
+	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onload = () => {
 			const text = String(reader.result || "").trim();
@@ -303,6 +319,85 @@ function readUploadedTextFile() {
 	});
 }
 
+function readFileAsArrayBuffer(file) {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => resolve(reader.result);
+		reader.onerror = () => reject(new Error("Could not read the selected file."));
+		reader.readAsArrayBuffer(file);
+	});
+}
+
+function extractTextFromPdf(buffer) {
+	const bytes = new Uint8Array(buffer);
+	const pdfText = bytesToBinaryString(bytes);
+	const streamTexts = Array.from(pdfText.matchAll(/stream\r?\n?([\s\S]*?)\r?\n?endstream/g))
+		.map((match) => extractPdfTextObjects(match[1]))
+		.filter(Boolean);
+	const text = cleanPdfText(streamTexts.join("\n\n"));
+
+	if (!text) {
+		throw new Error("No readable PDF text found. Scanned or image-only PDFs need OCR, which is not supported yet.");
+	}
+
+	return text;
+}
+
+function bytesToBinaryString(bytes) {
+	let output = "";
+	const chunkSize = 8192;
+	for (let index = 0; index < bytes.length; index += chunkSize) {
+		output += String.fromCharCode(...bytes.slice(index, index + chunkSize));
+	}
+	return output;
+}
+
+function extractPdfTextObjects(stream) {
+	return Array.from(stream.matchAll(/BT([\s\S]*?)ET/g))
+		.map((match) => extractPdfStrings(match[1]))
+		.flat()
+		.join(" ");
+}
+
+function extractPdfStrings(textObject) {
+	const literalStrings = Array.from(textObject.matchAll(/\((?:\\.|[^\\)])*\)/g))
+		.map((match) => decodePdfLiteralString(match[0].slice(1, -1)));
+	const hexStrings = Array.from(textObject.matchAll(/<([0-9A-Fa-f\s]{4,})>/g))
+		.map((match) => decodePdfHexString(match[1]));
+	return [...literalStrings, ...hexStrings].filter(Boolean);
+}
+
+function decodePdfLiteralString(value) {
+	return value
+		.replace(/\\n/g, "\n")
+		.replace(/\\r/g, "\r")
+		.replace(/\\t/g, "\t")
+		.replace(/\\b/g, "\b")
+		.replace(/\\f/g, "\f")
+		.replace(/\\([()\\])/g, "$1")
+		.replace(/\\([0-7]{1,3})/g, (_, octal) => String.fromCharCode(parseInt(octal, 8)));
+}
+
+function decodePdfHexString(value) {
+	const hex = value.replace(/\s+/g, "");
+	let output = "";
+	for (let index = 0; index < hex.length - 1; index += 2) {
+		const code = parseInt(hex.slice(index, index + 2), 16);
+		if (Number.isFinite(code) && code > 0) {
+			output += String.fromCharCode(code);
+		}
+	}
+	return output;
+}
+
+function cleanPdfText(text) {
+	return text
+		.replace(/\u0000/g, "")
+		.replace(/[ \t]+/g, " ")
+		.replace(/\s+([,.;:!?])/g, "$1")
+		.replace(/\n{3,}/g, "\n\n")
+		.trim();
+}
 function hasExtractedText(response) {
 	const text = response && response.text;
 	return Boolean(text && text.trim().length >= MIN_TEXT_LENGTH);
