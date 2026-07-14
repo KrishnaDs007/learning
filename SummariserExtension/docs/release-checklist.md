@@ -67,6 +67,7 @@ Testing automation is not planned for the current pass, but before release manua
 - Text-file upload summary.
 - Link extraction mode.
 - Content type selector changes summary focus.
+- Language selector changes summary output language.
 - Keyboard shortcut opens the popup.
 - Copy Markdown and Save .txt export actions.
 - Missing API key state.

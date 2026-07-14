@@ -70,7 +70,7 @@
 		return selected;
 	}
 
-	function buildSummaryPrompt(rawText, summaryType, summaryLength, contentType = "auto") {
+	function buildSummaryPrompt(rawText, summaryType, summaryLength, contentType = "auto", outputLanguage = "same") {
 		const text = prepareSourceText(rawText);
 		const lengthInstructions = {
 			short: "Keep it very concise in 3-4 sentences.",
@@ -94,10 +94,20 @@
 			forum: "Treat the source as a forum or discussion thread. Emphasize the original question, consensus answer, competing viewpoints, useful fixes, warnings, and unresolved points.",
 		};
 
+		const languageInstructions = {
+			same: "Write the summary in the same language as the source text.",
+			english: "Write the summary in English.",
+			hindi: "Write the summary in Hindi.",
+			spanish: "Write the summary in Spanish.",
+			french: "Write the summary in French.",
+			german: "Write the summary in German.",
+		};
+
 		return [
 			styleInstructions[summaryType] || styleInstructions.brief,
 			lengthInstructions[summaryLength] || lengthInstructions.medium,
 			contentInstructions[contentType] || contentInstructions.auto,
+			languageInstructions[outputLanguage] || languageInstructions.same,
 			"Do not invent facts. Preserve important names, numbers, and dates.",
 			"Text to summarise:",
 			text,

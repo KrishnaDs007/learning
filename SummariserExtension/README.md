@@ -12,6 +12,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 - Choose from brief, detailed, and bullet-point summary modes.
 - Tune summaries for articles, documentation, tutorials, product pages, or forum threads.
 - Control summary length with short, medium, and long options.
+- Choose the summary output language.
 - Summarise selected text from the right-click context menu.
 - Paste text directly into the popup.
 - Upload `.txt`, `.md`, `.csv`, `.json`, `.html`, text-based `.pdf`, `.docx`, and best-effort legacy `.doc` files.

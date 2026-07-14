@@ -35,6 +35,7 @@ Key features:
 - Compact popup for choosing source, provider, summary style, and output length
 - Brief, detailed, bullet, and key-takeaway summary modes
 - Content-aware prompt modes for articles, documentation, tutorials, product pages, and forum threads
+- Output language options for multilingual summaries
 - Links-only extraction mode
 - Right-click selected-text summarisation
 - Keyboard shortcut for opening the popup

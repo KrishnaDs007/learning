@@ -103,7 +103,7 @@ Goal: differentiate the extension.
 
 - Done: add keyboard shortcut support with `Alt+Shift+S` opening the popup.
 - Done: add export options for copying Markdown and saving output as text.
-- Add multi-language summaries.
+- Done: add multi-language summary output options.
 - Add "ask follow-up question about this page."
 - Add custom user prompts.
 - Add model selector for power users.
