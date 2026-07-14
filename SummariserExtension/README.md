@@ -12,6 +12,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 - Choose from brief, detailed, and bullet-point summary modes.
 - Tune summaries for articles, documentation, tutorials, product pages, or forum threads.
 - Add optional custom prompt instructions for the next summaries and follow-up answers.
+- Override the selected provider model from the popup for advanced one-off runs.
 - Control summary length with short, medium, and long options.
 - Choose the summary output language.
 - Ask follow-up questions about the source after a summary is generated.

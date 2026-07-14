@@ -26,6 +26,7 @@ const contentTypeSelect = document.getElementById("content-type");
 const summaryLengthSelect = document.getElementById("summary-length");
 const summaryLanguageSelect = document.getElementById("summary-language");
 const customPromptInput = document.getElementById("custom-prompt-input");
+const modelOverrideInput = document.getElementById("model-override-input");
 const pastePanel = document.getElementById("paste-panel");
 const pasteInput = document.getElementById("paste-input");
 const uploadPanel = document.getElementById("upload-panel");
@@ -152,7 +153,7 @@ async function handleRun() {
 			return;
 		}
 
-		const profile = getSelectedProvider();
+		const profile = getActiveProvider();
 		if (!profile) {
 			setError("Add a provider API key in settings before summarising.");
 			chrome.runtime.openOptionsPage();
@@ -198,7 +199,7 @@ async function handleFollowUp() {
 		return;
 	}
 
-	const profile = getSelectedProvider();
+	const profile = getActiveProvider();
 	if (!profile) {
 		setError("Add a provider API key in settings before asking follow-up questions.");
 		chrome.runtime.openOptionsPage();
@@ -236,6 +237,19 @@ async function handleFollowUp() {
 
 function getSelectedProvider() {
 	return state.profiles.find((profile) => profile.id === providerSelect.value) || state.profiles[0] || null;
+}
+
+function getActiveProvider() {
+	const profile = getSelectedProvider();
+	const modelOverride = modelOverrideInput.value.trim();
+	if (!profile || !modelOverride) {
+		return profile;
+	}
+
+	return {
+		...profile,
+		model: modelOverride,
+	};
 }
 
 async function getSelectedSource(outputMode) {

@@ -106,7 +106,7 @@ Goal: differentiate the extension.
 - Done: add multi-language summary output options.
 - Done: add "ask follow-up question about this page/source."
 - Done: add custom user prompts.
-- Add model selector for power users.
+- Done: add a popup model override for power users.
 
 ## Proposed next implementation order
 
