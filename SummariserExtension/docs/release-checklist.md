@@ -11,11 +11,12 @@
   - Done: DOCX upload text extraction
   - Done: best-effort legacy DOC upload text recovery
 - Confirm supported output modes:
-  - Brief summary
-  - Detailed summary
-  - Bullets
-  - Key takeaways
+  - Done: brief summary
+  - Done: detailed summary
+  - Done: bullets
+  - Done: key takeaways
   - Done: links only
+  - Done: follow-up answers
 - Confirm content-aware prompt modes:
   - Done: auto
   - Done: article
@@ -29,6 +30,9 @@
   - Done: Anthropic / Claude API
   - Done: xAI / Grok API
   - Done: Custom OpenAI-compatible endpoint
+- Confirm advanced controls:
+  - Done: custom prompt instructions
+  - Done: one-off popup model override
 
 ## Privacy And Permissions
 
@@ -68,6 +72,9 @@ Testing automation is not planned for the current pass, but before release manua
 - Link extraction mode.
 - Content type selector changes summary focus.
 - Language selector changes summary output language.
+- Follow-up question uses the same source context.
+- Custom prompt instruction changes the output focus.
+- Model override uses the typed model without changing saved provider settings.
 - Keyboard shortcut opens the popup.
 - Copy Markdown and Save .txt export actions.
 - Missing API key state.

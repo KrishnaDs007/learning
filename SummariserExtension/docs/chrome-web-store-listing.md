@@ -36,6 +36,8 @@ Key features:
 - Brief, detailed, bullet, and key-takeaway summary modes
 - Content-aware prompt modes for articles, documentation, tutorials, product pages, and forum threads
 - Output language options for multilingual summaries
+- Follow-up questions against the same summarized source
+- Optional custom prompt instructions and one-off model override for advanced use
 - Links-only extraction mode
 - Right-click selected-text summarisation
 - Keyboard shortcut for opening the popup
@@ -73,7 +75,7 @@ AI Summariser processes text only when the user asks it to summarise or extract 
 
 The extension may process webpage text, selected text, pasted text, uploaded file text, extracted links, provider profile details, and recent summary output. Summary requests are sent to the active AI provider selected by the user, such as Gemini, OpenAI, Anthropic, xAI, or a custom OpenAI-compatible endpoint. The extension does not sell user data and does not use user data for advertising.
 
-Provider API keys are stored locally in Chrome extension storage so the user can run summaries with their own provider account. Recent summary and links history is also stored locally and can be cleared from the popup.
+Provider API keys, optional custom prompt instructions, and recent summary/link history are stored locally in Chrome extension storage so the user can run summaries with their own provider account and clear local history from the popup.
 
 ## Remote Code Declaration
 
@@ -93,7 +95,7 @@ Required to add the right-click selected-text summarisation command.
 
 ### `storage`
 
-Required to save provider profiles, the selected default provider, temporary selected-text handoff state, on-page icon position, and local recent summary/history data.
+Required to save provider profiles, the selected default provider, optional custom prompt instructions, temporary selected-text handoff state, on-page icon position, and local recent summary/history data.
 
 ### `scripting`
 
@@ -125,3 +127,4 @@ For help, bug reports, or feature requests, contact the developer at https://kri
 4. Use the popup to summarise the page.
 5. Select text and use the context menu item to test selected-text summarisation.
 6. Try paste, upload, and links-only modes from the popup.
+7. Try a follow-up question, custom prompt instruction, and optional model override from the popup.
