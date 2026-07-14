@@ -55,7 +55,17 @@
 			hour: "2-digit",
 			minute: "2-digit",
 		});
-		return `${item.mode === "links" ? "Links" : "Summary"} - ${item.providerName} - ${date}`;
+		return `${getModeLabel(item.mode)} - ${item.providerName} - ${date}`;
+	}
+
+	function getModeLabel(mode) {
+		if (mode === "links") {
+			return "Links";
+		}
+		if (mode === "follow-up") {
+			return "Follow-up";
+		}
+		return "Summary";
 	}
 
 	window.PopupHistoryStore = {

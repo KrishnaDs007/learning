@@ -13,6 +13,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 - Tune summaries for articles, documentation, tutorials, product pages, or forum threads.
 - Control summary length with short, medium, and long options.
 - Choose the summary output language.
+- Ask follow-up questions about the source after a summary is generated.
 - Summarise selected text from the right-click context menu.
 - Paste text directly into the popup.
 - Upload `.txt`, `.md`, `.csv`, `.json`, `.html`, text-based `.pdf`, `.docx`, and best-effort legacy `.doc` files.
@@ -65,6 +66,7 @@ To summarise a page:
 3. Choose a summary type.
 4. Click `Summarise`.
 5. Use `Copy` to copy the result.
+6. Ask a follow-up question from the popup if you need a specific detail from the same source.
 
 To change the shortcut:
 

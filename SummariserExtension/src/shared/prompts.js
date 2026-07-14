@@ -114,10 +114,35 @@
 		].join("\n\n");
 	}
 
+	function buildFollowUpPrompt(rawText, previousSummary, question, outputLanguage = "same") {
+		const text = prepareSourceText(rawText);
+		const languageInstructions = {
+			same: "Answer in the same language as the source text unless the user asks otherwise.",
+			english: "Answer in English unless the user asks otherwise.",
+			hindi: "Answer in Hindi unless the user asks otherwise.",
+			spanish: "Answer in Spanish unless the user asks otherwise.",
+			french: "Answer in French unless the user asks otherwise.",
+			german: "Answer in German unless the user asks otherwise.",
+		};
+
+		return [
+			"Answer the user's follow-up question using only the provided source text and previous summary.",
+			languageInstructions[outputLanguage] || languageInstructions.same,
+			"If the source does not contain the answer, say that clearly and briefly.",
+			"Previous summary:",
+			String(previousSummary || "").trim(),
+			"Follow-up question:",
+			String(question || "").trim(),
+			"Source text:",
+			text,
+		].join("\n\n");
+	}
+
 	window.SummariserPrompts = {
 		MAX_INPUT_CHARS,
 		CHUNK_SIZE,
 		MAX_CHUNKS,
+		buildFollowUpPrompt,
 		buildSummaryPrompt,
 		prepareSourceText,
 	};

@@ -2,6 +2,7 @@ const MIN_TEXT_LENGTH = 40;
 
 const state = {
 	lastOutput: "",
+	lastSourceText: "",
 	source: null,
 	profiles: [],
 	history: [],
@@ -31,6 +32,9 @@ const fileLabel = document.getElementById("file-label");
 const historyPanel = document.getElementById("history-panel");
 const historyList = document.getElementById("history-list");
 const clearHistoryButton = document.getElementById("clear-history-btn");
+const followUpPanel = document.getElementById("follow-up-panel");
+const followUpInput = document.getElementById("follow-up-input");
+const followUpButton = document.getElementById("follow-up-btn");
 
 document.addEventListener("DOMContentLoaded", initialisePopup);
 window.addEventListener("unload", notifyPopupClosed);
@@ -38,6 +42,7 @@ summariseButton.addEventListener("click", handleRun);
 copyButton.addEventListener("click", copyOutput);
 copyMarkdownButton.addEventListener("click", copyMarkdownOutput);
 saveOutputButton.addEventListener("click", saveOutputAsText);
+followUpButton.addEventListener("click", handleFollowUp);
 settingsButton.addEventListener("click", () => chrome.runtime.openOptionsPage());
 sourceTypeSelect.addEventListener("change", syncSourcePanels);
 outputModeSelect.addEventListener("change", syncOutputControls);
@@ -48,6 +53,7 @@ if (clearHistoryButton) {
 
 async function initialisePopup() {
 	setOutputActionsEnabled(false);
+	setFollowUpEnabled(false);
 	chrome.action.setBadgeText({ text: "" });
 	await loadProviders();
 	await loadHistory();
@@ -117,9 +123,11 @@ async function handleRun() {
 	try {
 		const source = await getSelectedSource(outputMode);
 		state.source = source.source;
+		state.lastSourceText = source.text || "";
 		setSourceLabel(source.source);
 
 		if (outputMode === "links") {
+			setFollowUpEnabled(false);
 			const links = source.links && source.links.length > 0 ? source.links : extractLinksFromText(source.text);
 			renderLinks(links);
 			return;
@@ -143,6 +151,7 @@ async function handleRun() {
 		state.lastOutput = summary;
 		result.textContent = summary;
 		setOutputActionsEnabled(true);
+		setFollowUpEnabled(true);
 		bringResultIntoView();
 		setStatus(getSuccessMessage(source.text, profile));
 		await saveHistoryItem({
@@ -153,6 +162,54 @@ async function handleRun() {
 		});
 	} catch (error) {
 		setError(error.message || "Could not complete this request.");
+	}
+}
+
+async function handleFollowUp() {
+	const question = followUpInput.value.trim();
+	if (!question) {
+		setError("Ask a follow-up question before running.");
+		return;
+	}
+
+	if (!state.lastSourceText) {
+		setError("Summarise a source first before asking follow-up questions.");
+		setFollowUpEnabled(false);
+		return;
+	}
+
+	const profile = getSelectedProvider();
+	if (!profile) {
+		setError("Add a provider API key in settings before asking follow-up questions.");
+		chrome.runtime.openOptionsPage();
+		return;
+	}
+
+	setLoading("Answering follow-up...");
+
+	try {
+		const prompt = SummariserPrompts.buildFollowUpPrompt(
+			state.lastSourceText,
+			state.lastOutput,
+			question,
+			summaryLanguageSelect.value,
+		);
+		const answer = await ProviderRegistry.summarizeWithProvider(profile, prompt);
+		state.lastOutput = answer;
+		result.textContent = answer;
+		setOutputActionsEnabled(true);
+		setFollowUpEnabled(true);
+		bringResultIntoView();
+		setStatus(`Follow-up answered with ${profile.name}.`);
+		await saveHistoryItem({
+			mode: "follow-up",
+			output: answer,
+			source: state.source,
+			providerName: profile.name,
+		});
+	} catch (error) {
+		setError(error.message || "Could not answer this follow-up.");
+		setFollowUpEnabled(Boolean(state.lastSourceText));
 	}
 }
 
@@ -354,10 +411,22 @@ function renderHistory() {
 
 function restoreHistoryItem(item) {
 	state.lastOutput = item.output;
+	state.lastSourceText = "";
 	result.textContent = item.output;
 	setOutputActionsEnabled(true);
+	setFollowUpEnabled(false);
 	bringResultIntoView();
-	setStatus(`Restored ${item.mode === "links" ? "links" : "summary"} from recent history.`);
+	setStatus(`Restored ${getHistoryModeLabel(item.mode).toLowerCase()} from recent history.`);
+}
+
+function getHistoryModeLabel(mode) {
+	if (mode === "links") {
+		return "Links";
+	}
+	if (mode === "follow-up") {
+		return "Follow-up answer";
+	}
+	return "Summary";
 }
 
 function clearHistory() {
@@ -370,7 +439,9 @@ function renderLinks(links) {
 	const uniqueLinks = dedupeLinks(links);
 	if (uniqueLinks.length === 0) {
 		state.lastOutput = "";
+		state.lastSourceText = "";
 		setOutputActionsEnabled(false);
+		setFollowUpEnabled(false);
 		setError("No links were found in this source.");
 		return;
 	}
@@ -381,6 +452,7 @@ function renderLinks(links) {
 	}).join("\n");
 	result.textContent = state.lastOutput;
 	setOutputActionsEnabled(true);
+	setFollowUpEnabled(false);
 	bringResultIntoView();
 	setStatus(`${uniqueLinks.length} link${uniqueLinks.length === 1 ? "" : "s"} extracted.`);
 	saveHistoryItem({
@@ -506,6 +578,7 @@ function notifyPopupClosed() {
 
 function setLoading(message) {
 	summariseButton.disabled = true;
+	followUpButton.disabled = true;
 	setOutputActionsEnabled(false);
 	status.classList.remove("error");
 	status.textContent = message;
@@ -520,12 +593,14 @@ function setLoading(message) {
 
 function setStatus(message) {
 	summariseButton.disabled = false;
+	followUpButton.disabled = !state.lastSourceText;
 	status.classList.remove("error");
 	status.textContent = message;
 }
 
 function setError(message) {
 	summariseButton.disabled = false;
+	followUpButton.disabled = !state.lastSourceText;
 	setOutputActionsEnabled(Boolean(state.lastOutput));
 	status.classList.add("error");
 	status.textContent = message;
@@ -542,6 +617,14 @@ function setOutputActionsEnabled(enabled) {
 	copyButton.disabled = !enabled;
 	copyMarkdownButton.disabled = !enabled;
 	saveOutputButton.disabled = !enabled;
+}
+
+function setFollowUpEnabled(enabled) {
+	followUpPanel.classList.toggle("hidden", !enabled);
+	followUpButton.disabled = !enabled;
+	if (!enabled) {
+		followUpInput.value = "";
+	}
 }
 
 function bringResultIntoView() {

@@ -104,7 +104,7 @@ Goal: differentiate the extension.
 - Done: add keyboard shortcut support with `Alt+Shift+S` opening the popup.
 - Done: add export options for copying Markdown and saving output as text.
 - Done: add multi-language summary output options.
-- Add "ask follow-up question about this page."
+- Done: add "ask follow-up question about this page/source."
 - Add custom user prompts.
 - Add model selector for power users.
 
