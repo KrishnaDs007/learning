@@ -155,6 +155,11 @@ textarea {
 	max-height: 120px;
 }
 
+#custom-prompt-input {
+	min-height: 70px;
+	max-height: 120px;
+}
+
 textarea:focus {
 	border-color: var(--primary);
 	box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
@@ -204,6 +209,24 @@ textarea:focus {
 
 .file-label {
 	margin-top: 8px;
+}
+
+.custom-prompt-panel {
+	padding: 10px 12px;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--panel);
+}
+
+.custom-prompt-panel summary {
+	color: var(--text);
+	font-size: 13px;
+	font-weight: 800;
+	cursor: pointer;
+}
+
+.custom-prompt-panel .field {
+	margin-top: 10px;
 }
 
 .status {

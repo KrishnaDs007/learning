@@ -70,7 +70,7 @@
 		return selected;
 	}
 
-	function buildSummaryPrompt(rawText, summaryType, summaryLength, contentType = "auto", outputLanguage = "same") {
+	function buildSummaryPrompt(rawText, summaryType, summaryLength, contentType = "auto", outputLanguage = "same", customInstruction = "") {
 		const text = prepareSourceText(rawText);
 		const lengthInstructions = {
 			short: "Keep it very concise in 3-4 sentences.",
@@ -108,13 +108,14 @@
 			lengthInstructions[summaryLength] || lengthInstructions.medium,
 			contentInstructions[contentType] || contentInstructions.auto,
 			languageInstructions[outputLanguage] || languageInstructions.same,
+			formatCustomInstruction(customInstruction),
 			"Do not invent facts. Preserve important names, numbers, and dates.",
 			"Text to summarise:",
 			text,
-		].join("\n\n");
+		].filter(Boolean).join("\n\n");
 	}
 
-	function buildFollowUpPrompt(rawText, previousSummary, question, outputLanguage = "same") {
+	function buildFollowUpPrompt(rawText, previousSummary, question, outputLanguage = "same", customInstruction = "") {
 		const text = prepareSourceText(rawText);
 		const languageInstructions = {
 			same: "Answer in the same language as the source text unless the user asks otherwise.",
@@ -128,6 +129,7 @@
 		return [
 			"Answer the user's follow-up question using only the provided source text and previous summary.",
 			languageInstructions[outputLanguage] || languageInstructions.same,
+			formatCustomInstruction(customInstruction),
 			"If the source does not contain the answer, say that clearly and briefly.",
 			"Previous summary:",
 			String(previousSummary || "").trim(),
@@ -135,7 +137,15 @@
 			String(question || "").trim(),
 			"Source text:",
 			text,
-		].join("\n\n");
+		].filter(Boolean).join("\n\n");
+	}
+
+	function formatCustomInstruction(customInstruction) {
+		const instruction = String(customInstruction || "").trim();
+		if (!instruction) {
+			return "";
+		}
+		return `User instruction:\n${instruction}`;
 	}
 
 	window.SummariserPrompts = {

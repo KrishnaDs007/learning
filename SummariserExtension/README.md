@@ -11,6 +11,7 @@ It supports summarising the full page content, selected text, pasted text, and u
 - Gemini defaults to `gemini-3.5-flash`.
 - Choose from brief, detailed, and bullet-point summary modes.
 - Tune summaries for articles, documentation, tutorials, product pages, or forum threads.
+- Add optional custom prompt instructions for the next summaries and follow-up answers.
 - Control summary length with short, medium, and long options.
 - Choose the summary output language.
 - Ask follow-up questions about the source after a summary is generated.

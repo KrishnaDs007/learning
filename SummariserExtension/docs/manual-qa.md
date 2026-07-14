@@ -29,6 +29,7 @@ Use this checklist after loading the unpacked extension from this project folder
 - Set `Source` to `Paste text`, paste custom text, and run a summary.
 - Set `Source` to `Upload file`, choose a supported file, and run a summary.
 - Change `Content` between `Auto`, `Documentation`, and `Forum thread` on suitable sources and confirm the output focus changes.
+- Add a custom instruction, run a summary, and confirm the output follows that instruction.
 - Change `Language` to Hindi or another available language and confirm the summary output language changes.
 - After a summary appears, ask a follow-up question and confirm the answer uses the same source context.
 - Switch `Output` to `Links only` and confirm links render without requiring a provider.

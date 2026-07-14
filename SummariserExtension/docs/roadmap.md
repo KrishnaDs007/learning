@@ -105,7 +105,7 @@ Goal: differentiate the extension.
 - Done: add export options for copying Markdown and saving output as text.
 - Done: add multi-language summary output options.
 - Done: add "ask follow-up question about this page/source."
-- Add custom user prompts.
+- Done: add custom user prompts.
 - Add model selector for power users.
 
 ## Proposed next implementation order

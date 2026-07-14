@@ -1,4 +1,5 @@
 const MIN_TEXT_LENGTH = 40;
+const CUSTOM_PROMPT_STORAGE_KEY = "customPromptInstruction";
 
 const state = {
 	lastOutput: "",
@@ -24,6 +25,7 @@ const summaryTypeSelect = document.getElementById("summary-type");
 const contentTypeSelect = document.getElementById("content-type");
 const summaryLengthSelect = document.getElementById("summary-length");
 const summaryLanguageSelect = document.getElementById("summary-language");
+const customPromptInput = document.getElementById("custom-prompt-input");
 const pastePanel = document.getElementById("paste-panel");
 const pasteInput = document.getElementById("paste-input");
 const uploadPanel = document.getElementById("upload-panel");
@@ -46,6 +48,7 @@ followUpButton.addEventListener("click", handleFollowUp);
 settingsButton.addEventListener("click", () => chrome.runtime.openOptionsPage());
 sourceTypeSelect.addEventListener("change", syncSourcePanels);
 outputModeSelect.addEventListener("change", syncOutputControls);
+customPromptInput.addEventListener("input", saveCustomPromptInstruction);
 fileInput.addEventListener("change", handleFileSelected);
 if (clearHistoryButton) {
 	clearHistoryButton.addEventListener("click", clearHistory);
@@ -56,6 +59,7 @@ async function initialisePopup() {
 	setFollowUpEnabled(false);
 	chrome.action.setBadgeText({ text: "" });
 	await loadProviders();
+	await loadCustomPromptInstruction();
 	await loadHistory();
 	renderHistory();
 	syncSourcePanels();
@@ -93,6 +97,21 @@ async function loadProviders() {
 		option.selected = profile.isDefault;
 		providerSelect.appendChild(option);
 	}
+}
+
+function loadCustomPromptInstruction() {
+	return new Promise((resolve) => {
+		chrome.storage.local.get([CUSTOM_PROMPT_STORAGE_KEY], (stored) => {
+			customPromptInput.value = stored[CUSTOM_PROMPT_STORAGE_KEY] || "";
+			resolve();
+		});
+	});
+}
+
+function saveCustomPromptInstruction() {
+	chrome.storage.local.set({
+		[CUSTOM_PROMPT_STORAGE_KEY]: customPromptInput.value.trim(),
+	});
 }
 
 function syncSourcePanels() {
@@ -146,6 +165,7 @@ async function handleRun() {
 			summaryLengthSelect.value,
 			contentTypeSelect.value,
 			summaryLanguageSelect.value,
+			customPromptInput.value,
 		);
 		const summary = await ProviderRegistry.summarizeWithProvider(profile, prompt);
 		state.lastOutput = summary;
@@ -193,6 +213,7 @@ async function handleFollowUp() {
 			state.lastOutput,
 			question,
 			summaryLanguageSelect.value,
+			customPromptInput.value,
 		);
 		const answer = await ProviderRegistry.summarizeWithProvider(profile, prompt);
 		state.lastOutput = answer;
