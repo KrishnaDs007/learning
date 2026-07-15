@@ -36,11 +36,12 @@ Listing copy:
 8. Fill in privacy fields using `docs/privacy.md` and the privacy practices text in `docs/chrome-web-store-listing.md`.
 9. Add the support URL:
    - https://krishnasportfolio-rho.vercel.app/#contact
-10. Review permissions and use the explanations from `docs/chrome-web-store-listing.md`.
-11. Save the draft.
-12. Run the manual QA checklist from `docs/manual-qa.md` against the zipped extension build.
-13. Record the pass/fail results in `docs/manual-qa-results.md`.
-14. Submit for review when QA is complete.
+10. Keep `docs/support.md` ready for public support replies after launch.
+11. Review permissions and use the explanations from `docs/chrome-web-store-listing.md`.
+12. Save the draft.
+13. Run the manual QA checklist from `docs/manual-qa.md` against the zipped extension build.
+14. Record the pass/fail results in `docs/manual-qa-results.md`.
+15. Submit for review when QA is complete.
 
 ## V1 Release Decision
 

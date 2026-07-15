@@ -119,6 +119,10 @@ Suggested support text:
 
 For help, bug reports, or feature requests, contact the developer at https://krishnasportfolio-rho.vercel.app/#contact or email krishnadevashish17@gmail.com. Please include the Chrome version, extension version, provider type, and a short description of what you were trying to summarise. Do not send API keys or private page content in support requests.
 
+Internal support reply guide:
+
+- `docs/support.md`
+
 ## Review Notes For Testers
 
 1. Load the extension and open the options page.

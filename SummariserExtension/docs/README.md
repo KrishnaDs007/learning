@@ -13,6 +13,7 @@ This folder is the project knowledge base for the AI Summariser Chrome extension
 - [Chrome Web Store assets](./chrome-web-store-assets.md): icon status, screenshot plan, promo image requirements, and pre-upload asset checklist.
 - [Chrome Web Store upload guide](./chrome-web-store-upload.md): prepared package path, Store asset paths, and dashboard upload steps.
 - [Store screenshot guide](./store-screenshot-guide.md): exact screenshot capture steps, filenames, and privacy checks.
+- [Support guide](./support.md): public contact details, safe support-request wording, and common support replies.
 
 ## Suggested future docs
 
