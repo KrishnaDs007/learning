@@ -1,6 +1,7 @@
 # Manual QA Checklist
 
 Use this checklist after loading the unpacked extension from this project folder in `chrome://extensions`.
+Record the final pass/fail result in `docs/manual-qa-results.md` before submitting to the Chrome Web Store.
 
 ## Setup
 

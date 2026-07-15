@@ -39,7 +39,8 @@ Listing copy:
 10. Review permissions and use the explanations from `docs/chrome-web-store-listing.md`.
 11. Save the draft.
 12. Run the manual QA checklist from `docs/manual-qa.md` against the zipped extension build.
-13. Submit for review when QA is complete.
+13. Record the pass/fail results in `docs/manual-qa-results.md`.
+14. Submit for review when QA is complete.
 
 ## V1 Release Decision
 
@@ -53,5 +54,5 @@ No backend proxy is included in v1. Revisit a proxy later if public users need m
 - Confirm no real API keys appear in screenshots.
 - Confirm Store copy mentions direct provider calls and local API key storage.
 - Confirm manual QA passes on a freshly loaded unpacked extension.
+- Confirm `docs/manual-qa-results.md` has no unresolved blockers.
 - Keep `dist/ai-summariser-v1.0.0.zip` as the uploaded package for this version.
-
