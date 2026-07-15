@@ -1,6 +1,6 @@
 # Chrome Web Store Screenshot Guide
 
-Use this guide to capture the remaining Store screenshots from a real loaded extension.
+Use this guide to capture Store screenshots from a real loaded extension.
 
 ## Required Format
 
@@ -16,6 +16,7 @@ Use this guide to capture the remaining Store screenshots from a real loaded ext
 3. Done: provider settings page with saved provider cards and API key setup guidance: `assets/store/screenshots/provider-settings-1280x800.png`.
 4. Done: draggable right-edge page icon on a readable webpage: `assets/store/screenshots/page-icon-1280x800.png`.
 5. Done: links-only output in the popup: `assets/store/screenshots/links-output-1280x800.png`.
+6. Recommended refresh: popup with `Advanced` open and the follow-up question UI visible after a completed summary.
 
 ## Capture Steps
 
@@ -25,7 +26,8 @@ Use this guide to capture the remaining Store screenshots from a real loaded ext
 4. Open a public article page with non-private content.
 5. Run a summary and capture the popup.
 6. Capture settings, upload/paste mode, on-page icon, and links-only mode.
-7. Save final screenshots under `assets/store/screenshots/`.
+7. Open `Advanced`, add a harmless custom instruction and model override, run a summary, ask a follow-up question, and capture the popup if you want the Store listing to show the newest features.
+8. Save final screenshots under `assets/store/screenshots/`.
 
 ## Suggested Filenames
 
@@ -34,6 +36,7 @@ Use this guide to capture the remaining Store screenshots from a real loaded ext
 - `provider-settings-1280x800.png`
 - `page-icon-1280x800.png`
 - `links-output-1280x800.png`
+- Optional: `popup-advanced-follow-up-1280x800.png`
 
 ## Review Checklist
 

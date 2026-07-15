@@ -39,7 +39,7 @@ Use:
 
 ### Screenshots
 
-Status: ready.
+Status: ready for current upload, with one optional refresh recommended.
 
 Capture guide:
 
@@ -52,6 +52,10 @@ Ready screenshots:
 - `assets/store/screenshots/popup-upload-1280x800.png`
 - `assets/store/screenshots/page-icon-1280x800.png`
 - `assets/store/screenshots/links-output-1280x800.png`
+
+Recommended refresh before final submission:
+
+- Replace or add a popup screenshot that shows the current `Advanced` panel, including custom instructions, model override, and the follow-up question area after a summary.
 
 Chrome accepts screenshots at:
 
@@ -67,6 +71,7 @@ Recommended screenshot set:
 3. Done: provider settings page with saved provider cards and API key setup guidance.
 4. Done: on-page draggable right-edge icon on a webpage.
 5. Done: links-only extraction output.
+6. Recommended: popup with `Advanced` controls and follow-up question UI visible.
 
 Capture notes:
 
@@ -121,6 +126,7 @@ Included there:
 - Done: capture popup summary screenshot.
 - Done: capture provider settings screenshot.
 - Done: capture upload/paste, page icon, and links-only screenshots.
+- Recommended: refresh one popup screenshot so the Store listing shows follow-up questions, custom instructions, and model override.
 - Done: create the 440x280 small promotional image.
 - Review all screenshots for hidden API keys or private content.
 - Done: add final support contact details in the listing copy.
